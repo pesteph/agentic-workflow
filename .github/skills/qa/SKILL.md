@@ -1,0 +1,128 @@
+---
+name: qa
+description: Meta-Skill that dispatches all 5 QA reviews in parallel as a Fleet. Use this Skill after implementation to perform quality assurance efficiently.
+---
+
+# QA (Quality Assurance Fleet)
+
+You dispatch all 5 review Skills in parallel as a Fleet and present the consolidated results.
+
+## Execution
+
+The Main Agent performs `/qa` **itself** — it coordinates the Fleet agents and consolidates the results. The individual reviews are delegated to Sub-Agents.
+
+## Prerequisites
+
+- Implementation complete
+- Build green (run the project's build command — read from project files per Rule 20)
+- Tests green (run the project's test command with a timeout per Rule 15)
+- Intentional design choices documented (for review context, Rule 5)
+
+## Approach
+
+### 1. Determine scope
+
+Identify all changed files vs. main:
+```shell
+git --no-pager diff --stat main..HEAD
+```
+
+Split them into source files and test files. Read the Skill files of the 5 review Skills to know the current instructions.
+
+### 2. Gather design context
+
+Collect intentional design choices from the workflow so far (plan.md, architecture docs, discuss/design results). Give these to every review agent to avoid false positives (Rule 5).
+
+### 3. Dispatch the Fleet
+
+Start **all 5 reviews in parallel and immediately** as `general-purpose` agents in background mode. Do not wait for confirmation — the workflow expects parallel execution.
+
+**⚠️ ALL 5 agents MUST use Sub-Agent.** Do not use `code-review` for /review — the code-review agent produces unstructured output (its internal reasoning process leaks into the report) instead of the expected findings table format.
+
+| Agent | Skill | Scope | Model |
+|-------|-------|-------|-------|
+| qa-simplify | `/simplify` | Source files | Sonnet |
+| qa-test-review | `/test-review` | Source + test files | Sonnet |
+| qa-review | `/review` | Source files + diff | Sonnet |
+| qa-sec-review | `/sec-review` | Source + dependencies | Sonnet |
+| qa-doc-review | `/doc-review` | docs/ + source | Sonnet |
+
+**Every agent prompt must contain:**
+- Full Skill instructions (from the respective SKILL.md)
+- List of all changed files with full paths
+- Intentional design choices (marked as “NOT a finding”)
+- Instruction: fix safe findings directly, report the rest as a table
+- Instruction: run the project's build command after fixes (per Rule 20, read from project files)
+- SQL inserts for findings tracking
+- Forbidden list from Rule 18
+
+**Additional instructions for the review agent:**
+- If a design document exists (e.g. `files/design-output.md`): pass it to the review agent with the instruction “Compare the implementation against the design document. Every documented design decision (ADR) that is NOT reflected in the code = finding. Especially decisions that mean ‘remove something/do not do something’."
+
+**Additional instructions for the test-review agent:**
+- Explicit requirement for a mathematical code-path ↔ test matrix (Rule 23)
+- All source AND test files in scope
+
+### 4. Consolidate results
+
+When all agents are done:
+
+1. Read all agent results
+2. Verify build + tests using the project's build/test commands (read from project files per Rule 20)
+3. **Pre-categorization** (REQUIRED before presentation):
+   - **Test findings** (missing tests, missing assertions) → automatically “implement”, do NOT discuss
+   - **Doc findings** (docs/code inconsistency) → automatically “implement”, do NOT discuss
+   - **Source findings** (simplify, review, sec-review) → discuss individually with the user, user decides implement/park
+   - No finding may be parked without explicit user approval
+4. Create the consolidated report with the categorization
+
+### 5. Implement open findings
+
+If there are open findings the user wants fixed (e.g. missing tests):
+- Start additional agents to implement the findings
+- Verify build + tests after each fix
+
+## Output Format
+
+```
+## QA Report
+
+### Summary
+
+| Review | Findings | Fixed | Open |
+|--------|----------|-------|------|
+| /simplify | X | Y | Z |
+| /test-review | X | Y | Z |
+| /review | X | Y | Z |
+| /sec-review | X | Y | Z |
+| /doc-review | X | Y | Z |
+| **Total** | **X** | **Y** | **Z** |
+
+### Automatically Fixed
+- [List of fixed findings with description]
+
+### Open Findings
+
+| ID | Severity | Review | File | Description | Recommendation |
+|----|----------|--------|------|-------------|----------------|
+| XX | 🔴/🟡/🔵 | [Skill] | [File] | [Description] | implement/park |
+
+### Test Coverage (mathematical)
+[Take over the matrix from test-review]
+
+### Build & Tests
+- Build: ✅/❌ (Warnings: X)
+- Tests: X/Y passed
+
+## Workflow State (update in plan.md)
+- Completed Skill: /qa
+- Result: [Total findings, fixed, open, test coverage %]
+- Next Skill: /retro
+- Context for next Skill: [QA results as retro input]
+```
+
+💡 Context maintenance: Fleet results are token-intensive. Consider context compaction after presenting them.
+
+---
+
+**Next step:** `/retro` — run the workflow retrospective.

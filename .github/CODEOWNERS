@@ -1,0 +1,5 @@
+# CODEOWNERS — automatische Reviewer-Zuweisung
+# Doku: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/customizing-your-repository/about-code-owners
+
+# Default-Owner für alle Dateien
+* @pesteph
