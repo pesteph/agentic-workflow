@@ -271,6 +271,19 @@ The workflow gets more precise with every cycle — and every contribution makes
 
 ---
 
+## 💬 Feedback & Discussions
+
+You don't have to open a PR to share your experience. **[GitHub Discussions](https://github.com/pesteph/agentic-workflow/discussions)** is the right place for:
+
+- 🙋 **Questions** — something unclear in a Skill, a rule, or the setup
+- 💡 **Ideas** — a new Skill concept, a better output format, a rule you'd challenge
+- 🌟 **Show & tell** — how you use the workflow, what surprised you, what worked well
+- 🐛 **Something broke** — a Skill prompt that misfired in practice
+
+Every piece of real-world feedback sharpens the workflow for everyone. **You don't have to have a fix ready — just describe what happened.**
+
+---
+
 ## License
 
 MIT
