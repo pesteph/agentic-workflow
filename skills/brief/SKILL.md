@@ -19,11 +19,11 @@ You generate `design.md` — the **green figure** — as the only handoff artifa
 
 ## Execution
 
-**Delegate** the preparation to a Sub-Agent. Give it the full Skill instructions and the **design result from `/design`** (including additions from `/diaboli` and `/verify`). Show the user the complete result.
+**Delegate** the preparation to a Sub-Agent. Give it the full Skill instructions and the **design result from `/design`** (including additions from `/diaboli`). Show the user the complete result.
 
 ## Approach
 
-1. **Include the design result** — Use the solution concept and pseudocode from `/design` as the foundation. Apply additions from `/diaboli` (accepted risks, design changes) and `/verify` (findings, additional decisions) 1:1.
+1. **Include the design result** — Use the solution concept and pseudocode from `/design` as the foundation. Apply additions from `/diaboli` (accepted risks, design changes, completeness findings) 1:1.
 2. **Carry over research 1:1** — Technical details from the research report are NOT summarized or abstracted. For each data field: config key, field name, casing (PascalCase/camelCase), format, example value — state them explicitly. Information loss causes semantic bugs.
 3. **Build design.md** — Add all information the implementer needs:
    - Precise problem description

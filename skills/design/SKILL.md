@@ -28,7 +28,7 @@ You perform the detailed analysis of the options approved by the user, formulate
 3. **Formulate ADRs** — Every architecture decision is documented as an ADR.
 4. **Check open questions** — Are there ADRs that cannot be supported by research/sources?
 5. **Create pseudocode** — Create pseudocode/skeleton code for core classes (interfaces, signatures, core logic). Pseudocode is **collaborative discussion material**: the agent creates a draft → the user discusses, changes, extends → iterate together → finalize. Fully compilable code is the job of the implementation agent in Phase 2. For `/brief`, the pseudocode must be concrete enough for the Cloud Agent to implement it — but it does not need to compile. An abstract “implementation plan” (step 1, step 2, ...) is still NOT sufficient.
-6. **Store the design output** — Save the design result as `files/design-output.md` in the session. The design document is the central reference artifact for `/verify`, `/diaboli`, and implementation. **plan.md remains the source of truth for workflow state** — session files are read-only reference artifacts.
+6. **Store the design output** — Save the design result as `files/design-output.md` in the session. The design document is the central reference artifact for `/diaboli` and implementation. **plan.md remains the source of truth for workflow state** — session files are read-only reference artifacts.
 
 ## ADR Requirement
 
@@ -93,7 +93,7 @@ If open **technical** questions remain after proposing the solution:
 ## Workflow State (update in plan.md)
 - Completed Skill: /design
 - Result: [1-2 sentences: chosen solution + number of ADRs]
-- Next Skill: [/research (if there are open questions) | /diaboli (optional) | /verify | /brief (Cloud)]
+- Next Skill: [/research (if there are open questions) | /diaboli (optional — challenges design + verifies completeness) | /brief]
 - Context for next Skill: [Research prompt OR reference implementation OR brief foundation]
 ```
 
@@ -101,4 +101,4 @@ If open **technical** questions remain after proposing the solution:
 
 ---
 
-**Next step:** If there are open questions → `/research`. Otherwise: optionally `/diaboli` for creative attacks on design decisions, then `/verify` for the completeness check before implementation. Alternatively, go directly to `/brief` for cloud implementation.
+**Next step:** If there are open questions → `/research`. Otherwise: optionally `/diaboli` for creative attacks on design decisions + completeness check before implementation. Alternatively, go directly to `/brief` for cloud implementation.

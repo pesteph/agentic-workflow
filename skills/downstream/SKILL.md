@@ -30,18 +30,26 @@ If the user does not provide a path, ask for it.
 
 #### a) Skill files
 
-For each Skill file in the Skill repo:
+The Skill repo's canonical source for every workflow Skill is at `skills/<name>/SKILL.md` (in the Skill repo). Locally, in this consumer project, Skills live at:
+- `.github/skills/<name>/SKILL.md` for Copilot
+- `.claude/skills/<name>/SKILL.md` for Claude
 
-- Compare the version in the Skill repo with the local version in the consumer repo (`.github/skills/<name>/SKILL.md`)
+Detect which of these directories exist locally — diff against whichever is present. For dual-harness targets, both should be identical; if not, treat the mismatch as a separate finding.
+
+For each canonical Skill file in the Skill repo:
+
+- Compare with the matching local copy (Copilot path and/or Claude path)
 - Create a clear diff per file
 - Categorize changes:
   - **New in the Skill repo** — changes that do not yet exist locally
   - **Locally adapted** — places changed locally for project-specific reasons
   - **Conflicts** — places changed both locally and upstream
 
-#### b) Workflow rules (agents.instructions.md)
+Skip rules: some Skills are intentionally not installed for a given harness (because the harness provides a built-in equivalent). The skip-list is documented in the Skill repo's `/init` Skill. Do not "pull" a skipped Skill into a path where it is not supposed to live.
 
-- Compare the workflow rules in the Skill repo (e.g. `.github/instructions/agents.instructions.md` or `README.md`) with the local `.github/instructions/agents.instructions.md`
+#### b) Workflow rules (`AGENTS.md`)
+
+- Compare the canonical `AGENTS.md` in the Skill repo with the local `AGENTS.md` (at the consumer project's root)
 - Check for **new rules** added upstream
 - Check for **changed rules** (same number, different content)
 - Check the workflow chain, model selection table, and Skill overview for differences
@@ -71,7 +79,7 @@ For each Skill file with differences:
 
 ### 6. Update local docs
 
-- Check whether `copilot-instructions.md` needs to be updated (Skill overview, workflow rules)
+- Check whether harness entry files need to be updated (`AGENTS.md` at root, `.github/copilot-instructions.md`, `CLAUDE.md`)
 - Update Skill descriptions if steps or behavior changed due to the merge
 - Goal: local docs and Skill files must not drift apart
 
@@ -107,4 +115,4 @@ For each Skill file with differences:
 
 ---
 
-**Next step:** Check whether the updated Skills are consistent with the project. Update `copilot-instructions.md` if needed.
+**Next step:** Check whether the updated Skills are consistent with the project. Update the harness entry files (`AGENTS.md`, `.github/copilot-instructions.md`, `CLAUDE.md`) if needed.

@@ -36,7 +36,8 @@ If the user does not specify a path, ask for it.
 
 Before discussing diffs in detail — first provide an overall overview:
 
-- Compare ALL Skill files between the consumer repo and the Skill repo
+- Compare ALL Skill files between the consumer repo (local: `.github/skills/<name>/SKILL.md` or `.claude/skills/<name>/SKILL.md`) and the Skill repo (canonical: `skills/<name>/SKILL.md`)
+- For dual-harness consumers, the two local copies should be identical — flag any divergence as a separate finding before upstreaming
 - Show in a table: which Skills are identical, which are changed, which exist only locally/only in the repo
 - For each changed file: one-sentence summary of what changed
 - **Assessment per change:** Is the change suitable for upstream? Does it add value for all consumers?
@@ -67,8 +68,9 @@ For each Skill file confirmed as suitable for upstream:
 
 ### 6. Update docs in the Skill repo
 
-- Check whether the Skill repo has a README, docs, or a Skill overview
+- Check whether the Skill repo has a README, docs, or a Skill overview (typically `README.md`, `AGENTS.md`, `QUICKSTART.md`)
 - Update these files to match the changed Skills (e.g. new steps, changed descriptions, new Skills)
+- If a new Skill should be skipped on a particular harness (because of a built-in equivalent), update the skip-list table in the Skill repo's `/init` Skill
 - Goal: Skill repo docs and Skill files must not drift apart
 
 ### 7. Create a PR

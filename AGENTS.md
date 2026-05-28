@@ -35,7 +35,7 @@ We work **skills-based** with a defined workflow chain. At the end, each Skill p
 
   Phase 3: GREEN — Solution design
     /design
-    Optional: /diaboli (challenge assumptions) · /verify (completeness check)
+    Optional: /diaboli (challenge assumptions + completeness check)
     Completion: /brief → generates design.md — the green figure
     → "Build me exactly that."
 
@@ -69,8 +69,7 @@ After every review Skill, findings are discussed and fixed immediately — just 
    - `/research` — for knowledge gaps or unfamiliar technology
    - `/discuss` — for gray areas or assumptions that need clarification
    - `/conceptualize` — when several equally valid options should be evaluated
-   - `/verify` — for high complexity or risk
-   - `/diaboli` — when architecture decisions should be challenged
+   - `/diaboli` — when architecture decisions should be challenged AND the design should be checked for completeness (for high complexity or risk)
    The agent suggests optional Skills when they make sense, but the user decides. If a Skill is recommended as the next step, it must be executed — but the user can skip Skills.
 
 2. **Delegate instead of doing it yourself:** Main Agent = manager, not coder. Every task — reading code, searching the codebase, analyzing files, writing tests, changing code — is delegated to a Sub-Agent (whichever sub-agent primitive the harness provides). The Main Agent coordinates, reviews results, and steers the workflow. Fresh context windows in Sub-Agents prevent context rot. The ONLY things the Main Agent does itself:
@@ -81,7 +80,7 @@ After every review Skill, findings are discussed and fixed immediately — just 
 3. **Respect plan mode:**
    - In plan mode, ONLY planning happens. No implementation, no agent starts for code changes, no file changes outside session-state files. “Writing into the plan” means updating plan.md, NOTHING ELSE. No agents, no analysis, no code changes.
    - Implementation is allowed only after explicit user approval. **Answer questions** — if the user asks “how would you do X?”, that is a request for a proposal, not an implementation order. Show the proposal first, then wait for approval.
-   - Plan mode is exited only AFTER `/verify` — not after `/analyze` or `/research`. Phase 1 (analyze → discuss → research → conceptualize → design, optional: diaboli → verify) stays entirely in plan mode.
+   - Plan mode is exited only AFTER `/diaboli` (when used) or `/design` (when /diaboli is skipped) — not after `/analyze` or `/research`. Phase 1 (analyze → discuss → research → conceptualize → design, optional: diaboli) stays entirely in plan mode.
 
 4. **Never commit/push without approval:** `git add`, `git commit`, and `git push` are NEVER run unless the user explicitly uses the word "commit" or "push". “Looks good”, “keep going”, or “works for me” is NOT commit approval. If in doubt: ask.
 
@@ -166,8 +165,7 @@ Model choice is left to the agent: pick a stronger model for tasks that require 
 | `/discuss` | Reveal gray areas, make assumptions explicit — when unclear points need to be resolved before architecture decisions |
 | `/conceptualize` | Phase 2 — Show and evaluate solution options (blue figures) |
 | `/design` | Phase 3 — Formulate ADRs, create pseudocode as a collaborative artifact |
-| `/verify` | Completeness check and self-review — when completeness should be ensured before implementation |
-| `/diaboli` | Devil's Advocate — when architecture decisions should be checked for risks and blind spots |
+| `/diaboli` | Devil's Advocate + Completeness Check — when architecture decisions should be challenged AND the design plan should be verified before implementation |
 | `/deep-conceptualize` | Multi-Agent concept exploration for complex architecture decisions (alternative to /conceptualize) |
 | `/brief` | **End of Phase 3** — always generates `design.md` (the green figure). Local → Sub-Agent, Cloud → Copilot Coding Agent, or target an existing issue |
 | `/simplify` | Simplify code in a PR |
