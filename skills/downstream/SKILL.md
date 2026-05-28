@@ -45,7 +45,7 @@ For each canonical Skill file in the Skill repo:
   - **Locally adapted** — places changed locally for project-specific reasons
   - **Conflicts** — places changed both locally and upstream
 
-Skip rules: some Skills are intentionally not installed for a given harness (because the harness provides a built-in equivalent). The skip-list is documented in the Skill repo's `/init` Skill. Do not "pull" a skipped Skill into a path where it is not supposed to live.
+Skip rules: some Skills are intentionally not installed for a given harness (because the harness provides a built-in equivalent). The skip-list is documented in the Skill repo's `/install-workflow` Skill. Do not "pull" a skipped Skill into a path where it is not supposed to live.
 
 #### b) Workflow rules (`AGENTS.md`)
 

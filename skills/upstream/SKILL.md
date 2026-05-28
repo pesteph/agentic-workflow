@@ -70,7 +70,7 @@ For each Skill file confirmed as suitable for upstream:
 
 - Check whether the Skill repo has a README, docs, or a Skill overview (typically `README.md`, `AGENTS.md`, `QUICKSTART.md`)
 - Update these files to match the changed Skills (e.g. new steps, changed descriptions, new Skills)
-- If a new Skill should be skipped on a particular harness (because of a built-in equivalent), update the skip-list table in the Skill repo's `/init` Skill
+- If a new Skill should be skipped on a particular harness (because of a built-in equivalent), update the skip-list table in the Skill repo's `/install-workflow` Skill
 - Goal: Skill repo docs and Skill files must not drift apart
 
 ### 7. Create a PR

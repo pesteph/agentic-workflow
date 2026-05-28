@@ -1,16 +1,16 @@
 ---
-name: init
+name: install-workflow
 description: Install the agentic-workflow methodology into a target project. Detects existing installs (also old layouts), supports clean installs and upgrades, asks the user about locally modified Skill files. Run this from inside the agentic-workflow repo.
 ---
 
-# Init
+# Install-Workflow
 
 You install the agentic-workflow methodology into a target project. This Skill is the ONLY user-facing Skill in this repo — it deploys the workflow into projects where it is actually used.
 
 ## Invocation
 
 ```
-/init <target-path> [--harness=copilot|claude|both]
+/install-workflow <target-path> [--harness=copilot|claude|both]
 ```
 
 - **Required:** path to the target project (absolute or relative). If missing, ask the user for it.
@@ -74,7 +74,7 @@ Before doing anything, scan the target and classify every relevant path:
    - **orphan** — Skill exists in target but NOT in canonical sources (e.g. old `verify/`)
 
 3. **Workflow-state files**:
-   - Check for `<target>/plan.md`, `<target>/docs/`. These are NEVER touched by `/init`. Note their presence for the summary.
+   - Check for `<target>/plan.md`, `<target>/docs/`. These are NEVER touched by `/install-workflow`. Note their presence for the summary.
 
 You can determine "outdated vs locally-modified" pragmatically: if the file's structure (frontmatter `name:`, headings) matches canonical but content elsewhere differs in non-trivial ways, treat as **locally-modified**. When in doubt, classify as locally-modified — the user will decide.
 
@@ -83,7 +83,7 @@ You can determine "outdated vs locally-modified" pragmatically: if the file's st
 Show ONE consolidated plan and ask for explicit confirmation. Example format:
 
 ```
-/init plan for <target-path>
+/install-workflow plan for <target-path>
 Harness: both | copilot | claude
 
 NEW (will be created):
@@ -138,7 +138,7 @@ After confirmation:
 After execution:
 
 ```
-## /init Result
+## /install-workflow Result
 
 Target: <path>
 Harness: <copilot|claude|both>
@@ -179,7 +179,7 @@ Harness: <copilot|claude|both>
 Open <target> in your harness and run `/axiom` to define the universe.
 ```
 
-## What `/init` does NOT do
+## What `/install-workflow` does NOT do
 
 - Does NOT touch `docs/` in the target — the universe belongs to the user's project.
 - Does NOT touch `plan.md` — workflow state.

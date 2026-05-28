@@ -29,7 +29,7 @@ This repo is the **upstream repo** for Agentic Workflow:
 **Specifically:**
 
 - **Upstream** = this repo. The canonical versions of all Skills, workflow rules, and documentation live here under [`skills/`](skills/) and [`AGENTS.md`](AGENTS.md).
-- **Downstream** = projects that use this workflow. They get the methodology installed via `/init` (run from this repo) and stay current via `/downstream` (run from inside the target).
+- **Downstream** = projects that use this workflow. They get the methodology installed via `/install-workflow` (run from this repo) and stay current via `/downstream` (run from inside the target).
 - **Contributing** = if you develop a Skill improvement in your downstream project, you use `/upstream` to submit it here as a PR. That way all users benefit.
 
 ## Who merges?
@@ -105,7 +105,7 @@ skills/<skill-name>/
 └── SKILL.md
 ```
 
-(Not `.github/skills/` — that location is reserved in this repo for the `/init` meta-skill only. The canonical Skill bodies live in `skills/` and are distributed by `/init` into the target's `.github/skills/` or `.claude/skills/` as appropriate.)
+(Not `.github/skills/` — that location is reserved in this repo for the `/install-workflow` meta-skill only. The canonical Skill bodies live in `skills/` and are distributed by `/install-workflow` into the target's `.github/skills/` or `.claude/skills/` as appropriate.)
 
 `SKILL.md` must be self-contained and follow this structure (see existing Skills as a template):
 
@@ -127,7 +127,7 @@ description: <one sentence> # what the Skill does + when to use it; ends with a 
 
 Both fields are mandatory. `name` must equal the directory name under `skills/`. `description` is what the harness shows when offering the Skill, so write it from the *user's* perspective ("Analyzes a GitHub issue and …") rather than the agent's.
 
-If a new Skill should be SKIPPED for a particular harness (because that harness has a built-in equivalent), document the skip in the `/init` SKILL's skip-list table — see [`.github/skills/init/SKILL.md`](.github/skills/init/SKILL.md).
+If a new Skill should be SKIPPED for a particular harness (because that harness has a built-in equivalent), document the skip in the `/install-workflow` SKILL's skip-list table — see [`.github/skills/install-workflow/SKILL.md`](.github/skills/install-workflow/SKILL.md).
 
 ## What we do NOT accept
 

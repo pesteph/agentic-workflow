@@ -20,15 +20,15 @@ git clone https://github.com/pesteph/agentic-workflow.git ~/tools/agentic-workfl
 
 You can clone it anywhere — `~/tools/`, `~/src/`, wherever you keep tooling.
 
-### 2. Open this repo in your harness and run `/init`
+### 2. Open this repo in your harness and run `/install-workflow`
 
 ```
-/init /path/to/your/project
+/install-workflow /path/to/your/project
 ```
 
 Optional: `--harness=copilot|claude|both` (default `both`).
 
-`/init` installs the methodology in your target project:
+`/install-workflow` installs the methodology in your target project:
 - Workflow rules → `AGENTS.md` at your project root
 - Workflow Skills → `.github/skills/` (Copilot) and/or `.claude/skills/` (Claude)
 - Harness entry points (`copilot-instructions.md` / `CLAUDE.md` / `settings.json`)

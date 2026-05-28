@@ -2,7 +2,7 @@
 
 **A skills-based workflow template for structured, AI-supported software development.**
 
-> Language-agnostic. Works with GitHub Copilot CLI and Claude Code. Run `/init <target>` from this repo to deploy.
+> Language-agnostic. Works with GitHub Copilot CLI and Claude Code. Run `/install-workflow <target>` from this repo to deploy.
 
 ---
 
@@ -146,7 +146,7 @@ After every review: discuss findings and fix them. `/qa` itself stays on subscri
 | `/upstream` | 6 — Learning | Send improvements back to the Skill repo |
 | `/downstream` | Setup | Pull the latest Skills |
 | `/next` | Workflow | Read plan.md, start the next Skill |
-| `/init` | Setup (this repo only) | Install agentic-workflow into a target project |
+| `/install-workflow` | Setup (this repo only) | Install agentic-workflow into a target project |
 
 ---
 
@@ -162,22 +162,22 @@ git clone https://github.com/pesteph/agentic-workflow.git ~/tools/agentic-workfl
 
 ### 2. Open this repo in your harness
 
-GitHub Copilot CLI or Claude Code — `/init` is registered for both.
+GitHub Copilot CLI or Claude Code — `/install-workflow` is registered for both.
 
-### 3. Run `/init` against your target project
+### 3. Run `/install-workflow` against your target project
 
 ```
-/init /path/to/your/project
+/install-workflow /path/to/your/project
 ```
 
 Optional: `--harness=copilot|claude|both` (default `both`).
 
-`/init` detects which harness(es) you're using, installs the right files in your target, and handles both:
+`/install-workflow` detects which harness(es) you're using, installs the right files in your target, and handles both:
 
 - **First install** — fresh setup, no existing methodology in target
 - **Upgrade** — existing install gets updated; locally modified Skills get diffed and you decide per Skill
 
-After `/init`, open your target project and run:
+After `/install-workflow`, open your target project and run:
 
 ```
 /axiom
@@ -190,7 +190,7 @@ After `/init`, open your target project and run:
 - **GitHub Copilot CLI** — installs to `.github/skills/`; uses Copilot's `/research` and `/review` built-ins
 - **Claude Code** — installs to `.claude/skills/`; uses Claude's `/code-review`, `/security-review`, `/simplify` built-ins; ships a custom `/research` Skill (no Claude built-in)
 
-Skills with harness equivalents are intentionally NOT installed (skip-list in `.github/skills/init/SKILL.md`).
+Skills with harness equivalents are intentionally NOT installed (skip-list in `.github/skills/install-workflow/SKILL.md`).
 
 ---
 
@@ -206,21 +206,21 @@ agentic-workflow/
 │   ├── analyze/SKILL.md
 │   ├── … 15 more
 │   └── (no verify — merged into diaboli)
-├── harnesses/                      # per-harness templates that /init copies
+├── harnesses/                      # per-harness templates that /install-workflow copies
 │   ├── copilot/
 │   │   └── copilot-instructions.md
 │   └── claude/
 │       ├── CLAUDE.md
 │       └── settings.json
 ├── .github/                        # this repo's own Copilot setup
-│   ├── copilot-instructions.md     # minimal: "this repo provides /init"
-│   └── skills/init/SKILL.md        # /init exposed for Copilot CLI
+│   ├── copilot-instructions.md     # minimal: "this repo provides /install-workflow"
+│   └── skills/install-workflow/SKILL.md        # /install-workflow exposed for Copilot CLI
 └── .claude/                        # this repo's own Claude setup
-    ├── CLAUDE.md                   # minimal: "this repo provides /init"
-    └── skills/init/SKILL.md        # /init exposed for Claude Code
+    ├── CLAUDE.md                   # minimal: "this repo provides /install-workflow"
+    └── skills/install-workflow/SKILL.md        # /install-workflow exposed for Claude Code
 ```
 
-### Your project (after `/init`)
+### Your project (after `/install-workflow`)
 
 ```
 your-project/
