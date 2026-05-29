@@ -28,8 +28,8 @@ This repo is the **upstream repo** for Agentic Workflow:
 
 **Specifically:**
 
-- **Upstream** = this repo. The canonical versions of all Skills, workflow rules, and documentation live here.
-- **Downstream** = projects that use this workflow. They copy `.github/` initially and stay current via the `/downstream` Skill.
+- **Upstream** = this repo. The canonical versions of all Skills, workflow rules, and documentation live here under [`skills/`](skills/) and [`AGENTS.md`](AGENTS.md).
+- **Downstream** = projects that use this workflow. They get the methodology installed via `/install-workflow` (run from this repo) and stay current via `/downstream` (run from inside the target).
 - **Contributing** = if you develop a Skill improvement in your downstream project, you use `/upstream` to submit it here as a PR. That way all users benefit.
 
 ## Who merges?
@@ -60,7 +60,7 @@ Branch naming convention:
 
 ### 3. Implement changes
 
-Follow the workflow rules from [`.github/instructions/agents.instructions.md`](.github/instructions/agents.instructions.md). Especially relevant:
+Follow the workflow rules from [`AGENTS.md`](AGENTS.md). Especially relevant:
 
 - **Rule 18 — No placeholders**: no `TBD`, `TODO`, `later`, `will be defined`, etc.
 - **Rule 14 — Sources required**: back up statements with sources
@@ -98,12 +98,14 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 
 ## Skill Structure
 
-If you add a new Skill:
+If you add a new workflow Skill, add it under the canonical directory:
 
 ```
-.github/skills/<skill-name>/
+skills/<skill-name>/
 └── SKILL.md
 ```
+
+(Not `.github/skills/` — that location is reserved in this repo for the `/install-workflow` meta-skill only. The canonical Skill bodies live in `skills/` and are distributed by `/install-workflow` into the target's `.github/skills/` or `.claude/skills/` as appropriate.)
 
 `SKILL.md` must be self-contained and follow this structure (see existing Skills as a template):
 
@@ -123,7 +125,9 @@ description: <one sentence> # what the Skill does + when to use it; ends with a 
 ---
 ```
 
-Both fields are mandatory. `name` must equal the directory name under `.github/skills/`. `description` is what the harness shows when offering the Skill, so write it from the *user's* perspective ("Analyzes a GitHub issue and …") rather than the agent's.
+Both fields are mandatory. `name` must equal the directory name under `skills/`. `description` is what the harness shows when offering the Skill, so write it from the *user's* perspective ("Analyzes a GitHub issue and …") rather than the agent's.
+
+If a new Skill should be SKIPPED for a particular harness (because that harness has a built-in equivalent), document the skip in the `/install-workflow` SKILL's skip-list table — see [`.github/skills/install-workflow/SKILL.md`](.github/skills/install-workflow/SKILL.md).
 
 ## What we do NOT accept
 

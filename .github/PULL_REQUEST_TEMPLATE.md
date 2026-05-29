@@ -13,14 +13,14 @@
 - [ ] Bug fix (non-breaking change that fixes an issue)
 - [ ] New Skill (non-breaking change that adds a new Skill)
 - [ ] Skill improvement (change to an existing Skill)
-- [ ] Workflow rule change (change to `agents.instructions.md`)
+- [ ] Workflow rule change (change to `AGENTS.md`)
 - [ ] Documentation
 - [ ] Breaking change (change that affects existing workflows)
 
 ## Checklist
 
 - [ ] I have read [CONTRIBUTING.md](../CONTRIBUTING.md)
-- [ ] My code follows the workflow rules from `.github/instructions/agents.instructions.md`
+- [ ] My code follows the workflow rules from `AGENTS.md`
 - [ ] Documentation has been updated (README, SKILL.md if needed)
 - [ ] No `TBD`/`TODO`/`later` placeholders (Rule 18)
 - [ ] Language is English (project convention)

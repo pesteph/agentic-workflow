@@ -1,14 +1,14 @@
-# Agentic Workflow for GitHub Copilot
+# Agentic Workflow
 
 **A skills-based workflow template for structured, AI-supported software development.**
 
-> Language-agnostic. Optimized for GitHub Copilot. Copy, run `/axiom`, get started.
+> Language-agnostic. Works with GitHub Copilot CLI and Claude Code. Run `/install-workflow <target>` from this repo to deploy.
 
 ---
 
 ## The Core Principle
 
-> *“If you wish to make an apple pie from scratch, you must first invent the universe."*
+> *"If you wish to make an apple pie from scratch, you must first invent the universe."*
 > — Carl Sagan
 
 Before an agent can work meaningfully, it needs a **universe** — a precise model of the application, its constraints, and its stack. Undefined universe in — undefined output out.
@@ -24,13 +24,13 @@ This workflow makes defining the universe the first conscious step. Everything e
          ▼ per task:
   🔴 RED  — Problem space     /analyze /discuss /research
   🔵 BLUE — Solution options /conceptualize
-  🟢 GREEN — Solution design   /design /diaboli /verify → /brief → design.md
+  🟢 GREEN — Solution design   /design /diaboli → /brief → design.md
          │
          ▼
       BUILD → QA → LEARNING
 ```
 
-**Red** is the red spot — “this is exactly where the problem is.” **Blue** are raw solution options that together cover the red spot. **Green** is the one chosen solution tailored to the universe — `design.md`. And then: “Build me **exactly that**.”
+**Red** is the red spot — "this is exactly where the problem is." **Blue** are raw solution options that together cover the red spot. **Green** is the one chosen solution tailored to the universe — `design.md`. And then: "Build me **exactly that**."
 
 ---
 
@@ -44,11 +44,10 @@ graph TD
     DI["🔴 /discuss (optional)"]
     C["🔵 /conceptualize or /deep-conceptualize"]
     DE["🟢 /design"]
-    DAB["🟢 /diaboli (optional)"]
-    VE["🟢 /verify (optional)"]
+    DAB["🟢 /diaboli (optional — challenge + completeness)"]
     BR["🟢 /brief → design.md"]
     L["🛠️ Local: Sub-Agent"]
-    CL["🛠️ Cloud: Copilot Coding Agent"]
+    CL["🛠️ Cloud: Coding Agent"]
     QA["✅ /qa Fleet"]
     RT["↩️ /retro"]
 
@@ -58,8 +57,7 @@ graph TD
     R --> C
     C --> DE
     DE --> DAB
-    DAB --> VE
-    VE --> BR
+    DAB --> BR
     BR --> L
     BR --> CL
     L --> QA
@@ -79,7 +77,7 @@ The universe belongs to the project, not the task. `/axiom` writes it, `/retro` 
 
 **`/analyze`** makes the red spot precise. Which concrete problem should be solved? Which components are affected?
 
-**`/research`** *(built-in)* fills knowledge gaps with external context.
+**`/research`** fills knowledge gaps with external context. On Copilot CLI this is a built-in agent; on Claude Code a custom Skill is shipped (uses WebSearch + Explore + `gh search`).
 
 **`/discuss`** *(optional)* clarifies gray areas and assumptions before conceptualization.
 
@@ -87,43 +85,41 @@ The universe belongs to the project, not the task. `/axiom` writes it, `/retro` 
 
 **`/conceptualize`** shows raw solution options. Condition: together, all options cover the entire red spot. The user chooses which options to pursue further.
 
-**`/deep-conceptualize`** *(Alternative)* — several options are analyzed in parallel by separate agents, and a meta-agent synthesizes the result.
+**`/deep-conceptualize`** *(alternative)* — several options are analyzed in parallel by separate agents, and a meta-agent synthesizes the result.
 
 ### Phase 3: Green — Solution Design
 
 **`/design`** details the approved options as ADRs + pseudocode. Every decision needs a source. The result is a collaborative artifact — not finished code, but discussion material that is iterated on together.
 
-**`/diaboli`** *(optional)* attacks the decisions as Devil's Advocate.
+**`/diaboli`** *(optional)* serves a dual role for high-complexity / high-risk designs: **Devil's Advocate** (creatively attacks the design from 5 angles) AND **completeness check** (verifies the design is ready for implementation against 6 mechanical dimensions). One Skill, two parts.
 
-**`/verify`** *(optional)* performs the completeness check.
-
-**`/brief`** always generates `design.md` — the green figure, the only handoff artifact to Phase 4. Three paths: local (design.md → Sub-Agent), cloud (design.md → Copilot Coding Agent), existing issue (becomes the green figure).
+**`/brief`** always generates `design.md` — the green figure, the only handoff artifact to Phase 4. Three paths: local (design.md → Sub-Agent), cloud (design.md → cloud coding agent), existing issue (becomes the green figure).
 
 ### Phase 4: Build
 
-`design.md` → Sub-Agent (local) or GitHub Issue (Copilot Coding Agent, Cloud).
+`design.md` → Sub-Agent (local) or GitHub Issue (cloud coding agent).
 
 ### Phase 5: QA
 
-**`/qa`** dispatches all 5 reviews in parallel as a Fleet:
+**`/qa`** dispatches all 5 review dimensions in parallel as a Fleet:
 
-| Skill | Checks |
-|-------|--------|
-| `/simplify` | Unnecessary complexity |
-| `/test-review` | Test coverage (mathematical, with matrix) |
-| `/review` | *(built-in)* Bugs, logic, patterns |
-| `/sec-review` | Injection, auth, secrets, OWASP |
-| `/doc-review` | Docs vs. code consistency |
+| Dimension | Workflow Skill | Built-in equivalent used |
+|-------|--------|--------------------------|
+| Simplification | `/simplify` (Copilot) | Claude's `/simplify` |
+| Test coverage (mathematical) | `/test-review` | — (custom on both) |
+| Code review | `/review` (Copilot built-in) | Claude's `/code-review` |
+| Security | `/security-review` (Copilot) | Claude's `/security-review` (built-in) |
+| Docs vs. code | `/doc-review` | — (custom on both) |
 
-After every review: discuss findings and fix them.
+After every review: discuss findings and fix them. `/qa` itself stays on subscription budget; if you want deep cloud review, run `/code-review ultra` manually outside the workflow.
 
 ### Phase 6: Learning
 
 **`/retro`** improves the **workflow** (rules, Skills) — not the universe. The universe is only changed through `/axiom`.
 
-**`/upstream`** transfers generic Skill improvements from the retrospective back to the original Skill repo as a PR — other projects benefit.
+**`/upstream`** transfers generic Skill improvements from the retrospective back to this repo as a PR — other projects benefit.
 
-**`/downstream`** pulls the latest version of the Skills from the Skill repo. Local adjustments stay intact.
+**`/downstream`** pulls the latest version of the Skills from this repo into your project. Local adjustments are diffed against canonical; you decide per Skill.
 
 ---
 
@@ -133,120 +129,146 @@ After every review: discuss findings and fix them.
 |-------|-------|---------|
 | `/axiom` | 0 — Universe | Socratic dialogue + codebase analysis → `docs/` |
 | `/analyze` | 1 — Red | Open up the problem space, red spot |
-| `/research` | 1 — Red | *(Built-in)* Fill knowledge gaps |
+| `/research` | 1 — Red | Fill knowledge gaps (Copilot: built-in; Claude: shipped Skill) |
 | `/discuss` | 1 — Red | Clarify gray areas + user preferences |
 | `/conceptualize` | 2 — Blue | Show solution options, checkpoint |
 | `/deep-conceptualize` | 2 — Blue | Multi-Agent concept exploration (alternative) |
 | `/design` | 3 — Green | ADRs + pseudocode as a collaborative artifact |
-| `/diaboli` | 3 — Green | Devil's Advocate (optional) |
-| `/verify` | 3 — Green | Completeness check (optional) |
+| `/diaboli` | 3 — Green | Devil's Advocate + completeness check (optional) |
 | `/brief` | 3 → 4 | Generates `design.md` — the green figure |
-| `/simplify` | 5 — QA | Simplify code |
+| `/simplify` | 5 — QA | Simplify code (Copilot only; Claude uses built-in) |
 | `/test-review` | 5 — QA | Test coverage (mathematical, with matrix) |
-| `/review` | 5 — QA | *(Built-in)* Code review |
-| `/sec-review` | 5 — QA | Security review |
+| `/review` | 5 — QA | *(Built-in on both harnesses)* Code review |
+| `/security-review` | 5 — QA | Security review, mandatory STRIDE (Copilot only; Claude uses its built-in) |
 | `/doc-review` | 5 — QA | Documentation review |
-| `/qa` | 5 — QA | Meta-Skill: all 5 reviews in parallel |
+| `/qa` | 5 — QA | Meta-Skill: all 5 review dimensions in parallel |
 | `/retro` | 6 — Learning | Improve the workflow |
 | `/upstream` | 6 — Learning | Send improvements back to the Skill repo |
 | `/downstream` | Setup | Pull the latest Skills |
 | `/next` | Workflow | Read plan.md, start the next Skill |
+| `/install-workflow` | Setup (this repo only) | Install agentic-workflow into a target project |
 
 ---
 
 ## Setup
 
-### 1. Copy `.github/`
+This repo distributes the methodology — it does not apply itself. To use the workflow in your own project:
+
+### 1. Clone this repo locally
 
 ```bash
-cp -r .github/ /path/to/your/project/.github/
+git clone https://github.com/pesteph/agentic-workflow.git ~/tools/agentic-workflow
 ```
 
-That is all you need. All workflow rules, Skills, and instructions live in `.github/` — nothing else is required.
+### 2. Open this repo in your harness
 
-### 2. Define the universe
+GitHub Copilot CLI or Claude Code — `/install-workflow` is registered for both.
+
+### 3. Run `/install-workflow` against your target project
+
+```
+/install-workflow /path/to/your/project
+```
+
+Optional: `--harness=copilot|claude|both` (default `both`).
+
+`/install-workflow` detects which harness(es) you're using, installs the right files in your target, and handles both:
+
+- **First install** — fresh setup, no existing methodology in target
+- **Upgrade** — existing install gets updated; locally modified Skills get diffed and you decide per Skill
+
+After `/install-workflow`, open your target project and run:
 
 ```
 /axiom
 ```
 
-The Skill guides you through a Socratic dialogue: stack, architecture, constraints, NFAs, out-of-scope. The result is stored in `docs/` (project.md, architecture.md, domain.md) — readable by any agent tool.
+`/axiom` defines the universe (project, architecture, domain). Then `/analyze` to start your first task.
 
-### 3. Get started
+### Harness coverage
+
+- **GitHub Copilot CLI** — installs to `.github/skills/`; uses Copilot's `/research` and `/review` built-ins
+- **Claude Code** — installs to `.claude/skills/`; uses Claude's `/code-review`, `/security-review`, `/simplify` built-ins; ships a custom `/research` Skill (no Claude built-in)
+
+Skills with harness equivalents are intentionally NOT installed (skip-list in `.github/skills/install-workflow/SKILL.md`).
+
+---
+
+## File structure
+
+### This repo (distribution)
 
 ```
-/analyze "I want to build feature X"
-/next
+agentic-workflow/
+├── AGENTS.md                       # canonical workflow rules
+├── skills/                         # canonical Workflow Skills (18)
+│   ├── axiom/SKILL.md
+│   ├── analyze/SKILL.md
+│   ├── … 16 more
+│   └── (no verify — merged into diaboli)
+├── harnesses/                      # per-harness templates that /install-workflow copies
+│   ├── copilot/
+│   │   └── copilot-instructions.md
+│   └── claude/
+│       ├── CLAUDE.md
+│       └── settings.json
+├── .github/                        # this repo's own Copilot setup
+│   ├── copilot-instructions.md     # minimal: "this repo provides /install-workflow"
+│   └── skills/install-workflow/SKILL.md        # /install-workflow exposed for Copilot CLI
+└── .claude/                        # this repo's own Claude setup
+    ├── CLAUDE.md                   # minimal: "this repo provides /install-workflow"
+    └── skills/install-workflow/SKILL.md        # /install-workflow exposed for Claude Code
 ```
 
-With `/next`, you can start the next step at any time — the Skill reads the workflow state from `plan.md`.
+### Your project (after `/install-workflow`)
+
+```
+your-project/
+├── AGENTS.md                       # workflow rules at root
+├── .github/                        # if Copilot:
+│   ├── copilot-instructions.md
+│   └── skills/<name>/SKILL.md ×17  (research, review skipped — Copilot built-ins)
+├── CLAUDE.md                       # if Claude:
+├── .claude/
+│   ├── settings.json
+│   └── skills/<name>/SKILL.md ×16  (review, security-review, simplify skipped — Claude built-ins)
+├── docs/                           # created by /axiom — project universe
+│   ├── project.md
+│   ├── architecture.md
+│   └── domain.md
+└── plan.md                         # workflow state
+```
+
+---
+
+## Keeping Skills Up to Date
+
+From inside your target project:
+
+```
+/downstream    # pull latest Skills from this repo, with diff review per file
+/upstream      # push your improvements back as a PR
+```
+
+These work in the target, not in this distribution repo.
+
+> **Tip:** `/downstream` at the start of a new workflow cycle, `/upstream` after `/retro`.
 
 ---
 
 ## The Most Important Rules
 
-The full rules are in `.github/instructions/agents.instructions.md`. The most important ones:
+The full rules are in [`AGENTS.md`](AGENTS.md). The most important ones:
 
 | # | Rule |
 |---|------|
-| 1 | **Minimum workflow**: Phase 1 → Phase 3 + /brief → Phase 4 → Phase 5 → Phase 6 |
+| 1 | **Minimum workflow**: Phase 0 → Phase 1 → Phase 3 + /brief → Phase 4 → Phase 5 → Phase 6 |
 | 2 | **Delegate**: Main Agent = manager. All tasks → Sub-Agents with fresh context windows |
 | 3 | **Plan mode**: Plan first, then implement after approval |
 | 4 | **No commit without approval**: Only if the user explicitly says "commit" or "push" |
 | 13 | **Fact-based**: No assumptions — provide a source or ask |
 | 18 | **No placeholders**: "TBD", "TODO", "details to follow" are forbidden |
 | 28 | **Output format**: Pure info → Plain HTML. Interaction needed → disposable web app (HTML + JS, autosave to localStorage, export via clipboard) |
-
----
-
-## File Structure
-
-```
-.github/                                     # Template (copy)
-├── copilot-instructions.md              # Language, doc convention, reference to agents.instructions.md
-├── instructions/
-│   └── agents.instructions.md          # Workflow rules, Skill overview (loaded as agent/chat context)
-└── skills/
-    ├── axiom/SKILL.md                   # Defines the universe (Phase 0)
-    ├── analyze/SKILL.md
-    ├── discuss/SKILL.md
-    ├── conceptualize/SKILL.md
-    ├── deep-conceptualize/SKILL.md
-    ├── design/SKILL.md
-    ├── diaboli/SKILL.md
-    ├── verify/SKILL.md
-    ├── brief/SKILL.md                   # Generates design.md (green figure)
-    ├── simplify/SKILL.md
-    ├── test-review/SKILL.md
-    ├── sec-review/SKILL.md
-    ├── doc-review/SKILL.md
-    ├── qa/SKILL.md
-    ├── retro/SKILL.md
-    ├── upstream/SKILL.md
-    ├── downstream/SKILL.md
-    └── next/SKILL.md
-
-# Created by /axiom (in the target project):
-docs/
-├── project.md                           # Vision, Goals, Constraints, NFAs, Scope
-├── architecture.md                      # Stack, components, patterns, folders
-├── domain.md                            # Domain terms, business rules, glossary
-└── decisions/                           # ADRs (filled by /design)
-    └── 0001-*.md
-```
-
----
-
-## Keep Skills Up to Date
-
-```
-Skill repo (original)
-    ↕ /upstream (contribute improvements)
-    ↕ /downstream (pull latest version)
-Consumer repo (project)
-```
-
-> **Tip:** `/downstream` at the start of a new workflow cycle, `/upstream` after `/retro`.
 
 ---
 
@@ -264,7 +286,7 @@ The workflow ships with a Skill made exactly for this — **`/upstream`**:
 - 🔧 **Sharper rules** — when a rule misfired or had a blind spot in real use
 - 🧩 **New Skills** — when a recurring need has no Skill yet
 - 🪄 **Better Skill prompts** — clearer instructions, better outputs, fewer placeholders
-- 🌐 **Harness adapters** — making the workflow run cleanly on Cursor, Claude Code, Aider, …
+- 🌐 **Harness adapters** — making the workflow run cleanly on Cursor, Aider, …
 - 📚 **Docs & examples** — real-world experience reports help everyone
 
 The workflow gets more precise with every cycle — and every contribution makes it more precise for the next person, too. **No improvement is too small.** See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the details.
