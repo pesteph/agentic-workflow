@@ -54,7 +54,7 @@ Formulate concrete, actionable suggestions:
 The retro improves not only the workflow's *behavior* but also the *structure* of the Skill and instruction files themselves:
 
 1. **Structure scan** — for every `AGENTS.md`, `skills/*/SKILL.md`, and project instruction file: line count, number of distinct topics per file.
-2. **Length check** — files over 80 lines are a warning, over 120 lines a problem. Rules drown in long files.
+2. **Length check** — for a *focused single-topic file* (one skill, one instruction file) over 80 lines is a warning, over 120 a problem: rules drown in the mass. **Exception:** a central numbered rules reference or index (e.g. `AGENTS.md`) is naturally longer because it aggregates many atomic rules — judge it not by line count but by whether each entry stays atomic and there are no duplicates or contradictions. The real smell is a *single* rule growing long, or a topic file mixing concerns — not the aggregate length of a deliberate rules list.
 3. **Focus check** — does each file have ONE clear topic, or is it a grab-bag?
 4. **Duplicate rules** — same rule stated in multiple files → consolidate.
 5. **Contradictions** — rules that conflict → resolve.
