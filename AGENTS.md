@@ -145,6 +145,13 @@ After every review Skill, findings are discussed and fixed immediately — just 
    - **Pure info** (workflow diagrams, summaries, results, documentation) → **Plain HTML** — static, no saving needed.
    - **Interaction required** (editing pseudocode, iterating on diagrams, leaving remarks) → **Disposable web app** — HTML + JS for persistence. Applies to all Skills that produce output: `/axiom`, `/discuss`, `/design`, `/conceptualize`, `/research`, `/retro`, etc.
 
+   **Interactive HTMLs — required pattern:**
+   - **Annotation fields:** If the agent expects feedback, the HTML for each section MUST provide a `<textarea data-remark="...">`. No read-only presentation when interaction is expected.
+   - **Autosave:** Every keystroke saves to `localStorage` (crash protection).
+   - **Persistence:** Annotations are embedded into the HTML as `<script id="embedded-data" type="application/json">`. On load: embedded-data has priority over localStorage.
+   - **Feedback loop:** Export button copies all remarks as Markdown to the clipboard → user pastes into chat → agent processes them. Simple, pragmatic, works.
+   - **Auto-open:** The agent automatically opens the HTML in the browser after creation (`Start-Process` / `Invoke-Item` on Windows, `open` on macOS, `xdg-open` on Linux). No manual copy-paste of `file:///` paths.
+
 29. **Branch hygiene:** Never commit directly to the default/integration branch (`main`, `master`, `dev`, `develop`). Before starting work, check `git branch --show-current`; if you are on a protected branch, create a feature branch FIRST. Naming: `feature/<short-desc>`, `fix/<short-desc>`, `docs/<short-desc>`, `refactor/<short-desc>` (or a harness prefix like `copilot/<desc>`). This pairs with Rule 4 (Rule 4 governs *when* to commit, this governs *where*).
 
 30. **Root cause before fix:** No code fix without understanding the root cause. The order is reproduce → analyse → fix, never fix-first. For bugs especially: write the failing test first (it proves the cause is where you think it is), then fix. A fix that makes a symptom disappear without an understood cause is not a fix.
@@ -152,13 +159,6 @@ After every review Skill, findings are discussed and fixed immediately — just 
 31. **One topic at a time:** When working through a set of findings, decisions, or questions (review findings, `/discuss` gray areas, `/diaboli` attacks): handle them strictly sequentially — present one, resolve it with the user, only then move to the next. Do not batch multiple open items into one message unless the user signals "go through them all". This prevents items being silently skipped.
 
 32. **QA loop-back (tracer bullet):** If a Phase 5 (QA) finding reveals something that belongs upstream — a new pattern, an ADR violation, a cross-cutting concern, an undocumented API change, or real technical debt — STOP and loop back to Phase 1, do not patch it in place. QA is allowed to send work back to the problem space; that is a feature, not a failure.
-
-   **Interactive HTMLs — required pattern:**
-   - **Annotation fields:** If the agent expects feedback, the HTML for each section MUST provide a `<textarea data-remark="...">`. No read-only presentation when interaction is expected.
-   - **Autosave:** Every keystroke saves to `localStorage` (crash protection).
-   - **Persistence:** Annotations are embedded into the HTML as `<script id="embedded-data" type="application/json">`. On load: embedded-data has priority over localStorage.
-   - **Feedback loop:** Export button copies all remarks as Markdown to the clipboard → user pastes into chat → agent processes them. Simple, pragmatic, works.
-   - **Auto-open:** The agent automatically opens the HTML in the browser after creation (`Start-Process` / `Invoke-Item` on Windows, `open` on macOS, `xdg-open` on Linux). No manual copy-paste of `file:///` paths.
 
 ### Dynamic Skills
 

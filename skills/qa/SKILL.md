@@ -71,11 +71,13 @@ Start **all 5 reviews in parallel and immediately** as `general-purpose` agents 
 
 | Agent | Skill | Scope | Model |
 |-------|-------|-------|-------|
-| qa-simplify | `/simplify` | Source files | Sonnet |
-| qa-test-review | `/test-review` | Source + test files | Sonnet |
-| qa-review | `/review` | Source files + diff | Sonnet |
-| qa-security-review | `/security-review` | Source + dependencies | Sonnet |
-| qa-doc-review | `/doc-review` | docs/ + source | Sonnet |
+| qa-simplify | `/simplify` | Source files | faster model (review = pattern recognition) |
+| qa-test-review | `/test-review` | Source + test files | faster model |
+| qa-review | `/review` | Source files + diff | faster model |
+| qa-security-review | `/security-review` | Source + dependencies | faster model |
+| qa-doc-review | `/doc-review` | docs/ + source | faster model |
+
+(Model choice per the Model Selection guidance in AGENTS.md — reviews are primarily pattern recognition, so a faster model fits. Never hard-code a specific model name; availability differs across harnesses.)
 
 **Every agent prompt must contain:**
 - Full Skill instructions (from the respective SKILL.md)
@@ -98,7 +100,7 @@ Start **all 5 reviews in parallel and immediately** as `general-purpose` agents 
 When all agents are done:
 
 1. Read all agent results
-2. Verify build + tests using the project's build/test commands (read from project files per Rule 20)
+2. Verify build + tests using the project's build/test commands (read the command from project files per Rule 20; follow the build/test execution policy of Rule 15 — tests only in a worktree, otherwise build only)
 3. **Pre-categorization** (REQUIRED before presentation):
    - **Test findings** (missing tests, missing assertions) → automatically “implement”, do NOT discuss
    - **Doc findings** (docs/code inconsistency) → automatically “implement”, do NOT discuss

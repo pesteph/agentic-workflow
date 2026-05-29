@@ -201,10 +201,10 @@ Skills with harness equivalents are intentionally NOT installed (skip-list in `.
 ```
 agentic-workflow/
 ├── AGENTS.md                       # canonical workflow rules
-├── skills/                         # canonical Workflow Skills (17)
+├── skills/                         # canonical Workflow Skills (18)
 │   ├── axiom/SKILL.md
 │   ├── analyze/SKILL.md
-│   ├── … 15 more
+│   ├── … 16 more
 │   └── (no verify — merged into diaboli)
 ├── harnesses/                      # per-harness templates that /install-workflow copies
 │   ├── copilot/

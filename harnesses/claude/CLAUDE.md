@@ -21,9 +21,11 @@ Workflow Skills live under `.claude/skills/<name>/SKILL.md` and are invoked as s
 
 Some workflow dimensions are covered by Claude Code's own built-in skills (no separate workflow Skill installed):
 
-- **`/code-review`** for the code-review dimension (also invoked by `/qa`)
-- **`/security-review`** for the security dimension (also invoked by `/qa`)
-- **`/simplify`** for the simplification dimension (also invoked by `/qa`)
+- **`/code-review`** — covers the code-review dimension
+- **`/security-review`** — covers the security dimension
+- **`/simplify`** — covers the simplification dimension
+
+How `/qa` orchestrates these dimensions (which it dispatches as sub-agents vs. delegates to a built-in) is defined in the `/qa` Skill itself — it is the single authority on the QA mechanism.
 
 If you want deeper coverage on a specific change, you can run **`/code-review ultra`** separately — note that ultra is billed in Anthropic usage credits ($15–25 per review) **outside** your Claude Code subscription. The workflow's `/qa` does NOT auto-trigger ultra; that decision is yours.
 
