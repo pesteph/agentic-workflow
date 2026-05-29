@@ -161,7 +161,7 @@ Model choice is left to the agent: pick a stronger model for tasks that require 
 |-------|---------|
 | `/axiom` | **Phase 0** — Define the universe: read the codebase + Socratic dialogue → writes `docs/`. One time or when the universe changes. |
 | `/analyze` | Phase 1 — Open up the problem space, red spot, generate a `/research` prompt |
-| `/research` | (Built-in) Enrich context with researched information |
+| `/research` | Enrich context with researched information (codebase + web + repos), cited report. On Copilot CLI this is a built-in and skipped on install; on Claude Code the shipped Skill provides it. |
 | `/discuss` | Reveal gray areas, make assumptions explicit — when unclear points need to be resolved before architecture decisions |
 | `/conceptualize` | Phase 2 — Show and evaluate solution options (blue figures) |
 | `/design` | Phase 3 — Formulate ADRs, create pseudocode as a collaborative artifact |

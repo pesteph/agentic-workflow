@@ -227,11 +227,11 @@ your-project/
 ├── AGENTS.md                       # workflow rules at root
 ├── .github/                        # if Copilot:
 │   ├── copilot-instructions.md
-│   └── skills/<name>/SKILL.md ×16  (research, review skipped — Copilot built-ins)
+│   └── skills/<name>/SKILL.md ×17  (research, review skipped — Copilot built-ins)
 ├── CLAUDE.md                       # if Claude:
 ├── .claude/
 │   ├── settings.json
-│   └── skills/<name>/SKILL.md ×14  (review, security-review, simplify skipped — Claude built-ins)
+│   └── skills/<name>/SKILL.md ×16  (review, security-review, simplify skipped — Claude built-ins)
 ├── docs/                           # created by /axiom — project universe
 │   ├── project.md
 │   ├── architecture.md
