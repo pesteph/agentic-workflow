@@ -44,6 +44,9 @@ For complex architecture decisions with more than 3 serious options, `/deep-conc
 ### Problem Space Summary
 [Brief recap]
 
+### Non-Goals
+[What is consciously NOT in scope — even if it looks adjacent or tempting. Makes scope boundaries explicit so they survive into /design and /brief.]
+
 ### Options
 | ID | Option | Description | Complexity | Risk | Effort | Deeper Analysis? | Rationale |
 |---|--------|-------------|-------------|--------|---------|-------------------|------------|

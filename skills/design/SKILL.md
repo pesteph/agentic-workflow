@@ -92,6 +92,9 @@ If open **technical** questions remain after proposing the solution:
 ### Pseudocode / Reference Skeleton
 [Interfaces, signatures, core logic as pseudocode — iterated collaboratively with the user]
 
+### Non-Goals (explicit)
+[What this design consciously does NOT cover — boundaries the implementer must respect. Carried over from /conceptualize and sharpened.]
+
 ### Test Plan
 [How is the solution tested?]
 
