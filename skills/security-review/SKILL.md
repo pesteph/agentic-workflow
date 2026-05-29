@@ -1,11 +1,15 @@
 ---
-name: sec-review
-description: Conducts a security review of a pull request. Analyzes vulnerabilities, injection risks, auth issues, and other weaknesses. Use this Skill with a PR number or file paths.
+name: security-review
+description: Conducts a security review of a pull request. Mandatory STRIDE coverage. Analyzes vulnerabilities, injection risks, auth issues, dependencies, and other weaknesses. Use this Skill with a PR number or file paths.
 ---
 
 # Security-Review
 
-You perform an in-depth security review of a pull request or specified files.
+You perform an in-depth security review of a pull request or specified files. Mandatory STRIDE coverage; severity discipline is non-negotiable.
+
+## HARD-GATE: severity discipline
+
+Security findings are NEVER downgraded just because they look "only theoretical". A PII leak is a PII leak, even if "only" in logs. A SQL-injection risk is **Critical**, even if "only" internal. Defense-in-depth: internal systems get compromised too. The user assesses severity-in-context — the reviewer does not pre-soften it.
 
 ## Execution
 
@@ -75,13 +79,36 @@ Check not only direct but also transitive dependencies. Supply-chain attacks oft
 | ≥ 4.0 | **Medium** — Should be fixed |
 | < 4.0 | **Low** — Improvement proposal |
 
-### 3. Assessment
+### 3. STRIDE checklist (mandatory)
+
+Every review MUST cover all six STRIDE categories. For each: "Relevant? Yes/No. If yes: finding."
+
+| Category | Concern | Question |
+|----------|---------|----------|
+| **S**poofing | Authenticity | Can someone impersonate another actor (user, service, token)? |
+| **T**ampering | Integrity | Can someone modify data in transit or at rest? |
+| **R**epudiation | Non-repudiability | Can someone deny actions they took? Is there sufficient audit logging? |
+| **I**nformation Disclosure | Confidentiality | Can sensitive data leak (PII, secrets, internal structure)? |
+| **D**enial of Service | Availability | Can the system be brought down by malformed/excessive input? |
+| **E**levation of Privilege | Authorization | Can someone gain higher rights than they should have? |
+
+### 4. Assessment
 
 Each finding is assessed:
 - **Critical** — Fix immediately, blocks merge
 - **High** — Fix before merge
 - **Medium** — Should be fixed
 - **Low** — Improvement proposal
+
+## Anti-Rationalisation (do not soften)
+
+| Excuse | Reality |
+|--------|---------|
+| "It's only internal" | Internal systems get compromised. Defense in depth. |
+| "The data isn't sensitive" | PII is always sensitive. GDPR doesn't have a "tiny bit of PII" threshold. |
+| "It will never be called with user input" | Today no, tomorrow maybe. Secure by design. |
+| "Performance matters more than sanitisation" | A breach costs more than milliseconds. |
+| "That's a theoretical risk" | Theoretical risks are real risks. See HARD-GATE. |
 
 ## What is NOT a finding
 
@@ -131,8 +158,8 @@ For an in-depth security review:
 - [Area] ✅
 
 ## Workflow State (update in plan.md)
-- Completed Skill: /sec-review
-- Result: [1-2 sentences: overall assessment, number of findings by severity]
+- Completed Skill: /security-review
+- Result: [1-2 sentences: overall assessment, number of findings by severity, STRIDE coverage summary]
 - Next Skill: /doc-review
 - Context for next Skill: [PR number or file paths]
 ```

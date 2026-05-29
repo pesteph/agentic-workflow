@@ -40,6 +40,12 @@ You generate `design.md` — the **green figure** — as the only handoff artifa
 
 7. **Write atomic acceptance criteria** — Each individual operation/feature becomes its own acceptance criterion. Break down summary terms like “CRUD” into separate criteria.
 
+## HARD-GATE: the implementer has no context but this artifact
+
+For the cloud path especially: the coding agent gets **nothing but `design.md` and the repo**. It does not know your `/discuss` decisions, your `/conceptualize` trade-offs, or your `/diaboli` findings unless they are written into the artifact. Maximum detail beats brevity — when in doubt, include it. Reference files by exact path (not "like the Bol pipeline" but `src/Pipelines/.../Bol/Steps/BolSettlementExtractStep.cs`). Mark traps the agent would otherwise fall into with ⚠️ (e.g. "amounts are TEXT, not NUMBER").
+
+This is synthesis, not an interview — `/brief` asks no new questions; everything is already decided. It compiles what exists into a single self-contained handoff.
+
 ## Integrated Quality Chain
 
 The implementer (local or cloud) runs the **entire quality chain themselves** after implementation — directly in the same session, before finishing the work.
@@ -51,7 +57,7 @@ The implementer (local or cloud) runs the **entire quality chain themselves** af
 | **Simplify** | Unnecessary complexity, superfluous abstractions, readability | `/simplify` criteria |
 | **Test-Review** | Test coverage, logic tracing, missing edge cases | `/test-review` criteria |
 | **Code-Review** | Bugs, logic errors, pattern violations, naming | `/review` criteria |
-| **Security-Review** | Injection, auth issues, secrets, insecure defaults | `/sec-review` criteria |
+| **Security-Review** | Injection, auth issues, secrets, insecure defaults | `/security-review` criteria |
 | **Doc-Review** | XML docs consistent with code, outdated comments | `/doc-review` criteria |
 
 ### Handling findings

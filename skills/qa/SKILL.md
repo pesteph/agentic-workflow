@@ -20,11 +20,41 @@ The Main Agent performs `/qa` **itself** — it coordinates the Fleet agents and
 
 ## Approach
 
+### 0. Pre-Flight (HARD-GATE — not negotiable)
+
+Before any review work, verify the working state. Every check must pass; no "yes but we could still…".
+
+**Git status:**
+```shell
+git status --short
+git branch --show-current
+```
+- Detached HEAD (empty branch name) → **STOP**: "Detached HEAD. Switch to a branch."
+- Uncommitted changes → **STOP**: "Uncommitted changes. Commit first, then /qa."
+- On the default/integration branch (main/dev) → **STOP**: "Switch to a feature branch."
+
+**Push status** (only if the project uses a remote + PR flow):
+```shell
+git fetch origin --quiet
+git rev-list --left-right --count @{upstream}...HEAD
+```
+- No upstream → **STOP**: "Branch has no upstream. Push first."
+- Unpushed commits (right number > 0) → **STOP**: "Push first, then /qa."
+
+**PR (only if the project uses PRs):**
+```shell
+gh pr view --json number,title,headRefName,baseRefName,state,url,headRefOid
+```
+- No PR / PR not OPEN → **STOP** with the reason.
+- **Derive `baseRefName` from the PR** — use `git diff {baseRefName}...HEAD` for scope. Do NOT hardcode `main`/`dev`.
+
+For projects without a remote/PR flow, the git-status checks still apply; skip the push/PR checks.
+
 ### 1. Determine scope
 
-Identify all changed files vs. main:
+Identify all changed files vs. the PR base (from Pre-Flight) — fall back to `main` only if no PR base was derived:
 ```shell
-git --no-pager diff --stat main..HEAD
+git --no-pager diff --stat {baseRefName}..HEAD
 ```
 
 Split them into source files and test files. Read the Skill files of the 5 review Skills to know the current instructions.
@@ -44,7 +74,7 @@ Start **all 5 reviews in parallel and immediately** as `general-purpose` agents 
 | qa-simplify | `/simplify` | Source files | Sonnet |
 | qa-test-review | `/test-review` | Source + test files | Sonnet |
 | qa-review | `/review` | Source files + diff | Sonnet |
-| qa-sec-review | `/sec-review` | Source + dependencies | Sonnet |
+| qa-security-review | `/security-review` | Source + dependencies | Sonnet |
 | qa-doc-review | `/doc-review` | docs/ + source | Sonnet |
 
 **Every agent prompt must contain:**
@@ -72,7 +102,7 @@ When all agents are done:
 3. **Pre-categorization** (REQUIRED before presentation):
    - **Test findings** (missing tests, missing assertions) → automatically “implement”, do NOT discuss
    - **Doc findings** (docs/code inconsistency) → automatically “implement”, do NOT discuss
-   - **Source findings** (simplify, review, sec-review) → discuss individually with the user, user decides implement/park
+   - **Source findings** (simplify, review, security-review) → discuss individually with the user, user decides implement/park
    - No finding may be parked without explicit user approval
 4. Create the consolidated report with the categorization
 
@@ -94,7 +124,7 @@ If there are open findings the user wants fixed (e.g. missing tests):
 | /simplify | X | Y | Z |
 | /test-review | X | Y | Z |
 | /review | X | Y | Z |
-| /sec-review | X | Y | Z |
+| /security-review | X | Y | Z |
 | /doc-review | X | Y | Z |
 | **Total** | **X** | **Y** | **Z** |
 

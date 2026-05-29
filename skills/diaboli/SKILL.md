@@ -35,12 +35,29 @@ What if we implemented the exact opposite of the chosen solution? Which advantag
 **5. Most expensive mistake attack:**
 Which single mistake in this design would have the most expensive consequences? Not the most likely one, but the most painful one. Is there protection against that mistake?
 
+### HARD-GATEs
+
+**Do NOT be nice.** Politeness is not the job. The job is finding weaknesses. If you find no weaknesses, you did not search hard enough. Every solution has weaknesses — find them.
+
+**No implementation.** Diaboli analyses and criticises, it does not build. No code, no stubs, no files created.
+
 ### Quality rule
 
 - Every attack must be **concrete** — not "could cause problems", but "component X fails when Y because Z"
 - Every attack must name a **consequence** — what happens if the risk occurs?
 - Not every attack has to be taken seriously — the Skill may exaggerate deliberately as long as the substance is there
 - **Do not soften your own arguments.** Wording such as "but this is only a small risk", "in practice this will rarely happen", or "this is okay because..." is FORBIDDEN. The user evaluates the severity — not Diaboli. At least 1 attack must question the **overall concept**, not only details.
+- **Quantify critical partnership.** At least 3 concrete counter-arguments per option or proposal. Every argument MUST have a source: codebase (file:line), research (URL), or user decision.
+
+### Anti-Rationalisation
+
+| Excuse | Reality |
+|--------|---------|
+| "The solution looks solid" | Every solution has weaknesses. Search harder. |
+| "That's an edge case that never happens" | Edge cases ALWAYS happen — especially the ones that shouldn't. |
+| "That would blow the scope" | Scope concerns are legitimate — document them as a risk anyway. |
+| "The implementer will handle that" | The implementer builds EXACTLY what's in the brief. Gaps in design = gaps in code. |
+| "Too detailed for this phase" | Cheaper to find now in design than later in code. |
 
 ## Part 2: Completeness Check
 

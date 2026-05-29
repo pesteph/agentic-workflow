@@ -24,7 +24,7 @@ This Skill is executed by the Main Agent **itself** — not delegated to a Sub-A
 
 Go through the completed steps:
 - `/analyze` → `/discuss` → `/research` → `/conceptualize` → `/design` → implementation/`/brief`
-- `/simplify` → `/test-review` → `/review` → `/sec-review` → `/doc-review`
+- `/simplify` → `/test-review` → `/review` → `/security-review` → `/doc-review`
 
 ### 2. Evaluate each step
 
@@ -48,6 +48,20 @@ Formulate concrete, actionable suggestions:
 - New Skills that are missing
 - Changes to the workflow order
 - Improvements to `copilot-instructions.md`
+
+### 4b. Instructions/Skills best-practice audit (every retro — no exception)
+
+The retro improves not only the workflow's *behavior* but also the *structure* of the Skill and instruction files themselves:
+
+1. **Structure scan** — for every `AGENTS.md`, `skills/*/SKILL.md`, and project instruction file: line count, number of distinct topics per file.
+2. **Length check** — files over 80 lines are a warning, over 120 lines a problem. Rules drown in long files.
+3. **Focus check** — does each file have ONE clear topic, or is it a grab-bag?
+4. **Duplicate rules** — same rule stated in multiple files → consolidate.
+5. **Contradictions** — rules that conflict → resolve.
+6. **Compliance check** — for every rule that was VIOLATED this session: WHY? Too hidden? No HARD-GATE? Too abstract? Wrong file?
+7. **Split proposals** — for over-long files, propose concretely which sections move where.
+
+A rule that gets ignored is often not a discipline problem but a structure problem — it was buried where nobody reads it.
 
 ### 5. Upstream proposals
 
@@ -95,7 +109,7 @@ Retro is only “done” once proposals are implemented. Flow:
 ### Metrics
 - Workflow steps run: [X of Y]
 - Skipped steps: [List]
-- Findings per review Skill: [/simplify: X, /test-review: X, /review: X, /sec-review: X, /doc-review: X]
+- Findings per review Skill: [/simplify: X, /test-review: X, /review: X, /security-review: X, /doc-review: X]
 - Research loop iterations: [Number]
 - Changed files: [Number]
 - Dynamic /research calls: [Which Skills used /research?]

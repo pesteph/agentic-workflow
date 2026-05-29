@@ -11,6 +11,12 @@ You analyze test coverage and test quality through mathematical calculation and 
 
 **Delegate** the analysis to a Sub-Agent. Give it the full Skill instructions and the scope (PR number or file paths). Show the user the full result.
 
+## HARD-GATEs
+
+**Read full files, not just the diff.** Always read the complete production and test files involved — context is decisive, a diff alone does not show whether a pattern is consistent.
+
+**Tests that go green immediately prove NOTHING.** If a new test passes on first run: verify it actually tests what it should. Is the assertion correct? Does the production code path actually execute under that test?
+
 ## Approach
 
 ### 0. Determine scope
@@ -93,6 +99,18 @@ Categories:
 - Check whether test input data matches the real production format
 - Compare field names, casing (PascalCase vs camelCase), and value formats with legacy tests or real messages
 - "Does the code do the right thing?" is more important than "Does the code do what it is supposed to do?"
+
+## Anti-Rationalisation
+
+| Excuse | Reality |
+|--------|---------|
+| "Happy path is enough" | Error paths are where bugs live. |
+| "Input validation is trivial" | Null/empty checks are the most common bug source. Each one needs an explicit test. |
+| "That is implicitly covered by other tests" | Implicit = not covered. Explicit test or it does not count. |
+| "100% coverage is not the goal" | Correct. But 0% error-path coverage is a defect. |
+| "The test is green, so it is correct" | Green only means no assertion failed. Verify the assertion checks the right thing. |
+
+False-positive discipline: every "this is intentional / not a finding" classification needs a verifiable source (file:line, ADR id, project-convention reference). "I think this is in the conventions" is not enough — grep the conventions file and quote the hit.
 
 ## Dynamic context (optional)
 

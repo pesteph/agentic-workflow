@@ -42,7 +42,7 @@ Because the harness already provides a semantically equivalent built-in:
 |---|---|---|---|
 | `research` | skip | install | Copilot has built-in `/research`; Claude has none |
 | `review` | skip | skip | Both harnesses provide a code-review built-in |
-| `sec-review` | install | skip | Claude provides `/security-review` |
+| `security-review` | install | skip | Claude provides built-in `/security-review` (same name) |
 | `simplify` | install | skip | Claude provides `/simplify` |
 | All other skills (axiom, analyze, discuss, conceptualize, deep-conceptualize, design, diaboli, brief, test-review, doc-review, qa, retro, upstream, downstream, next) | install | install | No built-in equivalent |
 
@@ -109,7 +109,7 @@ REQUIRES DECISION (locally modified):
 
 SKIPPED (harness provides built-in):
   Copilot: research, review
-  Claude:  review, sec-review, simplify
+  Claude:  review, security-review, simplify
 
 WILL NOT TOUCH:
   docs/    (your universe)
@@ -168,7 +168,7 @@ Harness: <copilot|claude|both>
 
 ### Skipped (X skills — harness provides built-in)
 - Copilot: research, review
-- Claude:  review, sec-review, simplify
+- Claude:  review, security-review, simplify
 
 ### Found but not touched
 - docs/        (your universe — N files)

@@ -18,6 +18,12 @@ You show options for action and let the user decide which ones to pursue.
 
    **Important:** Evaluate **architecture**, not working style (commit strategy, test order, branching). If after research and discuss only **one** architectural path makes sense: say that clearly and go directly to `/design`. Do not generate artificial options just to fill the template.
 
+## HARD-GATE: the user decides
+
+NEVER make the decision yourself. No "Recommendation: Option B", no "The right choice is...", no implicit ranking that pushes the user toward one option. Present options, present trade-offs (concrete, with sources), let the user decide. Even when one option looks obviously better — the choice is ALWAYS the user's.
+
+**Quantify each option.** Every option in the matrix MUST cite a source: codebase (file:line), research (URL), or user decision. "Could work" without a source is forbidden.
+
 ## Decision IDs
 
 Options receive IDs according to Rule 19: D-A-XX, D-B-XX, D-C-XX (sequential per option group). These IDs are referenced by `/design` in ADRs.

@@ -45,6 +45,19 @@ The docs must serve two audiences:
 - Configuration options are described
 - Examples are runnable and current
 
+### 5. Promote session artifacts to repo knowledge (optional but recommended)
+
+Workflow session artifacts (in `files/` or wherever the workflow stored them) are working documents that otherwise decay with the session. The valuable parts belong in the permanent repo docs. Review what exists and propose promotions — do NOT copy 1:1; polish and fit them into the target structure:
+
+| Session artifact | Promote to |
+|------------------|------------|
+| design output / ADRs from `/design` | Architecture docs / `docs/decisions/` (ADR format) |
+| analysis from `/analyze` | Research/architecture doc, if it holds lasting insight |
+| decisions from `/discuss` | ADR, when architecture-relevant |
+| concept options from `/conceptualize` | Decision background in architecture docs |
+
+Present the promotion proposals to the user and let them decide what gets carried over. When promoting into versioned docs, bump the version and add a changelog entry if the project uses one. This step is a proposal step — apply promotions only after explicit user approval.
+
 ## Output Format
 
 ```

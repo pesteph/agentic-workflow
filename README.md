@@ -108,7 +108,7 @@ The universe belongs to the project, not the task. `/axiom` writes it, `/retro` 
 | Simplification | `/simplify` (Copilot) | Claude's `/simplify` |
 | Test coverage (mathematical) | `/test-review` | — (custom on both) |
 | Code review | `/review` (Copilot built-in) | Claude's `/code-review` |
-| Security | `/sec-review` (Copilot) | Claude's `/security-review` |
+| Security | `/security-review` (Copilot) | Claude's `/security-review` (built-in) |
 | Docs vs. code | `/doc-review` | — (custom on both) |
 
 After every review: discuss findings and fix them. `/qa` itself stays on subscription budget; if you want deep cloud review, run `/code-review ultra` manually outside the workflow.
@@ -139,7 +139,7 @@ After every review: discuss findings and fix them. `/qa` itself stays on subscri
 | `/simplify` | 5 — QA | Simplify code (Copilot only; Claude uses built-in) |
 | `/test-review` | 5 — QA | Test coverage (mathematical, with matrix) |
 | `/review` | 5 — QA | *(Built-in on both harnesses)* Code review |
-| `/sec-review` | 5 — QA | Security review (Copilot only; Claude uses `/security-review`) |
+| `/security-review` | 5 — QA | Security review, mandatory STRIDE (Copilot only; Claude uses its built-in) |
 | `/doc-review` | 5 — QA | Documentation review |
 | `/qa` | 5 — QA | Meta-Skill: all 5 review dimensions in parallel |
 | `/retro` | 6 — Learning | Improve the workflow |
@@ -231,7 +231,7 @@ your-project/
 ├── CLAUDE.md                       # if Claude:
 ├── .claude/
 │   ├── settings.json
-│   └── skills/<name>/SKILL.md ×14  (review, sec-review, simplify skipped — Claude built-ins)
+│   └── skills/<name>/SKILL.md ×14  (review, security-review, simplify skipped — Claude built-ins)
 ├── docs/                           # created by /axiom — project universe
 │   ├── project.md
 │   ├── architecture.md

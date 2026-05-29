@@ -7,6 +7,14 @@ description: Detailed analysis of the approved options. Formulate ADRs, create p
 
 You perform the detailed analysis of the options approved by the user, formulate ADRs, and create pseudocode as a collaborative artifact.
 
+## HARD-GATEs
+
+**No code.** `/design` produces a DOCUMENT, not code. No code stubs, no skeletons, no files created in the production tree. Compilable code is the job of the implementation agent in Phase 4.
+
+**No "open points" section.** The design artefact MUST NOT contain a section called "Open Points", "Open Questions", or "Open Technical Details". A design is a finished specification. Technical details: decide them. Design choices: ask the user. "Open" = design not finished = STOP and clarify.
+
+**Pseudocode is verifiable, prose is not.** Every method with logic (loops, branching, error handling) gets pseudocode — not an abstract description like "iterates over files". `/diaboli` can find bugs in pseudocode; it cannot find bugs in prose.
+
 ## Execution
 
 **Delegate** the design work to a Sub-Agent. Give it the full Skill instructions, the approved options from `/conceptualize`, and the research results. Show the user the complete result.

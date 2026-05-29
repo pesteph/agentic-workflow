@@ -46,7 +46,7 @@ We work **skills-based** with a defined workflow chain. At the end, each Skill p
   Phase 5: QA
     /qa (dispatches all 5 reviews in parallel as a Fleet):
     ┌─────────┬──────────────┬──────────┬──────────────┬─────────────┐
-    │/simplify│ /test-review │ /review  │ /sec-review  │ /doc-review │
+    │/simplify│ /test-review │ /review  │/security-review│/doc-review │
     └─────────┴──────────────┴──────────┴──────────────┴─────────────┘
     After every review Skill: discuss &amp; fix findings
 
@@ -84,7 +84,7 @@ After every review Skill, findings are discussed and fixed immediately — just 
 
 4. **Never commit/push without approval:** `git add`, `git commit`, and `git push` are NEVER run unless the user explicitly uses the word "commit" or "push". “Looks good”, “keep going”, or “works for me” is NOT commit approval. If in doubt: ask.
 
-5. **Provide review context:** For `/review`, `/sec-review`, and `/doc-review`, give the review agent the intentional design choices (from architecture documentation or the concept). This reduces false positives.
+5. **Provide review context:** For `/review`, `/security-review`, and `/doc-review`, give the review agent the intentional design choices (from architecture documentation or the concept). This reduces false positives.
 
 6. **Challenge critically:** If the user asks “did I miss anything?” or “challenge this critically”, ALWAYS present at least 3 counterarguments, risks, or alternative perspectives before agreeing. Do not simply confirm.
 
@@ -101,7 +101,7 @@ After every review Skill, findings are discussed and fixed immediately — just 
 12. **Present findings in tables:** Review findings are ALWAYS presented as a structured table with ID, severity, impact, evidence, fix proposal, effort, and an explicit recommendation (implement/park). Prose-only findings are not acceptable. **QA finding categorization:** BEFORE presentation, findings are categorized by type:
    - **Test findings** (missing tests, missing assertions) → **ALWAYS implement**, no follow-up question
    - **Doc findings** (docs/code inconsistency) → **ALWAYS implement**, no follow-up question
-   - **Source findings** (simplify, review, sec-review) → get a **user decision**, discuss individually
+   - **Source findings** (simplify, review, security-review) → get a **user decision**, discuss individually
    No finding may be parked without explicit user approval. Test and doc findings may NEVER be parked.
 
 13. **Fact-based:** NO ASSUMPTIONS — provide a source or ask. Every statement about runtime behavior, data formats, API behavior, system behavior, etc. must be supported by evidence (code, logs, docs, tests) or clarified with the user. “I think” and “probably” are not a basis for decisions. Facts-based, not feelings-based.
@@ -147,7 +147,7 @@ After every review Skill, findings are discussed and fixed immediately — just 
 
 ### Dynamic Skills
 
-Skills may **use other workflow commands** as part of their work, especially `/research`. A Skill can decide on its own that it needs more context and trigger `/research` — for example `/sec-review` researches current attack vectors for the technology in use, and `/test-review` researches framework-specific testing patterns.
+Skills may **use other workflow commands** as part of their work, especially `/research`. A Skill can decide on its own that it needs more context and trigger `/research` — for example `/security-review` researches current attack vectors for the technology in use, and `/test-review` researches framework-specific testing patterns.
 
 The Skill decides whether a research step is needed. The user is informed.
 
@@ -171,9 +171,9 @@ Model choice is left to the agent: pick a stronger model for tasks that require 
 | `/simplify` | Simplify code in a PR |
 | `/test-review` | Calculate test coverage, trace logic, verify conventions |
 | `/review` | (Built-in) Code review |
-| `/sec-review` | Security review of a PR |
+| `/security-review` | Security review of a PR (mandatory STRIDE coverage). On Claude Code this is a built-in; skipped on install. |
 | `/doc-review` | Check documentation against code/specs |
-| `/qa` | Meta-Skill: dispatches /simplify, /test-review, /review, /sec-review, /doc-review in parallel as a Fleet |
+| `/qa` | Meta-Skill: dispatches /simplify, /test-review, /review, /security-review, /doc-review in parallel as a Fleet |
 | `/downstream` | Pull the latest Skill versions from the original Skill repo and merge them |
 | `/retro` | Phase 6 — workflow retrospective, improve rules (not the universe!) |
 | `/upstream` | Send Skill improvements from /retro back to the original Skill repo as a PR |

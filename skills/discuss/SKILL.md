@@ -50,11 +50,11 @@ For each assumption, check:
 
 Clarify gray areas and assumptions with the user. **Rules:**
 
-1. **One question per message** — Do not bundle multiple questions
+1. **One question per message** — Do not bundle multiple questions. Wait for the user's answer before posing the next question. The user leads, the model follows.
 2. **Prefer multiple choice** — Use `ask_user` with `choices`. No catch-all options like "Other"
 3. **Show trade-offs** — For each option, briefly explain what is gained and what is lost
 4. **Provide context** — The user must understand WHY the question matters (1 sentence)
-5. **Challenge answers instead of just accepting them** — This is a DISCUSS, not a questionnaire. After each user answer: present at least 1 substantial counterargument with a concrete consequence (e.g. “If we choose X, that means Y — is that acceptable?”). Only when the counterarguments are weak or the user consciously accepts them is the decision considered clarified. Goal: make sure the decision is thought through, not just made quickly.
+5. **Challenge answers instead of just accepting them** — This is a DISCUSS, not a questionnaire. After each user answer: present **at least 3 concrete counter-arguments**, each with a source (codebase file:line, research URL, or prior user decision). Only when the counterarguments are weak or the user consciously accepts them is the decision considered clarified.
 6. **Respect the final decision** — Once the user has heard the counterarguments and sticks with the choice: accept it and move on. Do not circle endlessly.
 
 **Question order:** Scope questions first (what is in/out?), then architecture, then details.
