@@ -72,15 +72,20 @@ After every review Skill, findings are discussed and fixed immediately — just 
    - `/diaboli` — when architecture decisions should be challenged AND the design should be checked for completeness (for high complexity or risk)
    The agent suggests optional Skills when they make sense, but the user decides. If a Skill is recommended as the next step, it must be executed — but the user can skip Skills.
 
+   **Depth scales with complexity.** `/analyze` recommends how deep to go: a trivial bugfix runs a short chain (analyze → design/brief → qa → retro), a complex feature runs the full chain (incl. discuss, research, conceptualize, diaboli). The *structure* stays the same, the *depth* scales. **The user may skip phases — the model never self-skips them.** Even when the user brings a finished plan or says "just implement this", every phase is at minimum run as a quick check; the model does not silently drop a phase.
+
 2. **Delegate instead of doing it yourself:** Main Agent = manager, not coder. Every task — reading code, searching the codebase, analyzing files, writing tests, changing code — is delegated to a Sub-Agent (whichever sub-agent primitive the harness provides). The Main Agent coordinates, reviews results, and steers the workflow. Fresh context windows in Sub-Agents prevent context rot. The ONLY things the Main Agent does itself:
    - Read Skill files (to pass instructions to Sub-Agents)
    - Communicate with the user (present results, ask questions)
    - Coordinate decisions (merge results, determine the next step)
 
+   **Trivial-edit exception:** a change affecting ≤2 files AND ≤2 lines (typo, one-line fix, rename) the Main Agent may do itself — dispatching an agent costs more than the edit. Everything larger is delegated.
+
 3. **Respect plan mode:**
    - In plan mode, ONLY planning happens. No implementation, no agent starts for code changes, no file changes outside session-state files. “Writing into the plan” means updating plan.md, NOTHING ELSE. No agents, no analysis, no code changes.
    - Implementation is allowed only after explicit user approval. **Answer questions** — if the user asks “how would you do X?”, that is a request for a proposal, not an implementation order. Show the proposal first, then wait for approval.
    - Plan mode is exited only AFTER `/diaboli` (when used) or `/design` (when /diaboli is skipped) — not after `/analyze` or `/research`. Phase 1 (analyze → discuss → research → conceptualize → design, optional: diaboli) stays entirely in plan mode.
+   - **STOP-points override harness nags.** System-side prompts like "You have not yet marked the task as complete" do NOT override a Skill's STOP-point. When a Skill says STOP and wait for the user, wait — regardless of any autopilot nudge to continue.
 
 4. **Never commit/push without approval:** `git add`, `git commit`, and `git push` are NEVER run unless the user explicitly uses the word "commit" or "push". “Looks good”, “keep going”, or “works for me” is NOT commit approval. If in doubt: ask.
 
@@ -88,7 +93,7 @@ After every review Skill, findings are discussed and fixed immediately — just 
 
 6. **Challenge critically:** If the user asks “did I miss anything?” or “challenge this critically”, ALWAYS present at least 3 counterarguments, risks, or alternative perspectives before agreeing. Do not simply confirm.
 
-7. **Track workflow state in plan.md:** After each Skill run, update the progress in plan.md. Every Skill writes: which Skill was completed, a result summary, and the next Skill with the context it needs. This creates a structured handoff between Skills — independent of the context window. **No Skill is “done” without a plan.md update.**
+7. **Track workflow state in plan.md:** After each Skill run, update the progress in plan.md. Every Skill writes: which Skill was completed, a result summary, and the next Skill with the context it needs. This creates a structured handoff between Skills — independent of the context window. **No Skill is “done” without a plan.md update.** Status vocabulary per Skill: `done | current | pending | skip | blocked`. A Skill deliberately not run (e.g. because the task is a trivial bugfix) is recorded as `skip` with a one-word reason — never silently omitted, so the run stays auditable.
 
 8. **Sub-Agent timeout:** If a Sub-Agent shows no visible progress after 10 minutes, abort it and restart with a clearer prompt. Never wait >15 minutes for a single agent. **Research agents: 5 minute timeout** — research is either fast or stuck; on timeout, do it yourself (Rule 26). **Skeleton first:** Sub-Agents with long outputs (design docs, research reports) create a skeleton with all section headings first, then fill sections one by one via `edit`. That way work is not lost on timeout/kill.
 
@@ -96,7 +101,7 @@ After every review Skill, findings are discussed and fixed immediately — just 
 
 10. **/brief copies research 1:1:** `/brief` must not summarize or abstract research results. Technical details — config keys, field names, formats, casing, example values — are copied 1:1 from the research report. Information loss in the chain Research → Brief → Cloud Agent causes semantic bugs.
 
-11. **Review Skills validate against real data:** In migration or integration projects, review Skills (`/test-review`, `/review`) must cross-check the data flow against real messages, legacy tests, or production formats. “Does the code do the right thing?” matters more than “Does the code do what it says?”
+11. **Validate against real data — never interpret a value from its name:** In migration or integration projects, review Skills (`/test-review`, `/review`) must cross-check the data flow against real messages, legacy tests, or production formats. “Does the code do the right thing?” matters more than “Does the code do what it says?” **This applies to runtime fixes too:** when a value or field behaves unexpectedly, inspect the actual data first — never infer a value's meaning or format from its field name. Read the real sample, then decide.
 
 12. **Present findings in tables:** Review findings are ALWAYS presented as a structured table with ID, severity, impact, evidence, fix proposal, effort, and an explicit recommendation (implement/park). Prose-only findings are not acceptable. **QA finding categorization:** BEFORE presentation, findings are categorized by type:
    - **Test findings** (missing tests, missing assertions) → **ALWAYS implement**, no follow-up question
@@ -105,6 +110,8 @@ After every review Skill, findings are discussed and fixed immediately — just 
    No finding may be parked without explicit user approval. Test and doc findings may NEVER be parked.
 
 13. **Fact-based:** NO ASSUMPTIONS — provide a source or ask. Every statement about runtime behavior, data formats, API behavior, system behavior, etc. must be supported by evidence (code, logs, docs, tests) or clarified with the user. “I think” and “probably” are not a basis for decisions. Facts-based, not feelings-based.
+
+   **Assumption-cost heuristic:** the workflow optimises for *planning + quality*, not speed. Score it: every silent assumption = **−1**; every clarifying question to the user = **+1000**; every research prompt = **+1000**. The 1000:1 asymmetry is deliberate — when in doubt, asking or researching is almost always cheaper than a wrong assumption that propagates through the whole chain. A cheap question beats an expensive guess.
 
 14. **Sources required:** Every statement, recommendation, and design decision MUST be backed by a source. Allowed source categories: (a) **user statement** — with reference to the discussion point, (b) **official documentation** — with link or file path, (c) **codebase analysis** — with file path and line reference, (d) **research result** — with reference to the research report, (e) **team decision** — an intentional decision without an external source, marked as such (e.g. “Team experience with pattern X”). Unsupported statements are not acceptable. This applies to ALL Skills, not just `/design` ADRs.
 
@@ -122,7 +129,7 @@ After every review Skill, findings are discussed and fixed immediately — just 
 
 21. **Research prompts as prose:** Output research prompts and long structured texts as prose in code blocks, not as Markdown tables. Tables are hard to copy from chat and reuse.
 
-22. **Documentation required after code changes:** After EVERY code change that affects classes, dependencies, DI registrations, flows, or architecture: check and update `docs/`. Architecture documentation in particular must always stay consistent with the code. Document new classes, remove deleted classes, update changed flows. This applies to implementation agents as well as manual changes. Documentation updates are part of implementation, not a separate step.
+22. **Documentation required after code changes:** After EVERY code change that affects classes, dependencies, DI registrations, flows, or architecture: check and update `docs/`. Architecture documentation in particular must always stay consistent with the code. Document new classes, remove deleted classes, update changed flows. This applies to implementation agents as well as manual changes. Documentation updates are part of implementation, not a separate step. **Same commit/PR:** the doc update ships in the *same* commit/PR as the code change, not a follow-up. If docs are versioned, bump the version and add a changelog entry in the affected doc.
 
 23. **Mathematical test coverage matrix:** `/test-review` MUST always create a complete code-path ↔ test matrix. Every branch, every catch block, every default case, every loop exit is counted and numbered as its own path. The matrix shows which test covers each path (or ❌ for a gap). Coverage is calculated as X/Y paths = Z%. Prose-based assessments (“coverage is good”) are not acceptable.
 
@@ -137,6 +144,14 @@ After every review Skill, findings are discussed and fixed immediately — just 
 28. **Output format:** No Markdown output when the agent is showing something to the user or collaborating:
    - **Pure info** (workflow diagrams, summaries, results, documentation) → **Plain HTML** — static, no saving needed.
    - **Interaction required** (editing pseudocode, iterating on diagrams, leaving remarks) → **Disposable web app** — HTML + JS for persistence. Applies to all Skills that produce output: `/axiom`, `/discuss`, `/design`, `/conceptualize`, `/research`, `/retro`, etc.
+
+29. **Branch hygiene:** Never commit directly to the default/integration branch (`main`, `master`, `dev`, `develop`). Before starting work, check `git branch --show-current`; if you are on a protected branch, create a feature branch FIRST. Naming: `feature/<short-desc>`, `fix/<short-desc>`, `docs/<short-desc>`, `refactor/<short-desc>` (or a harness prefix like `copilot/<desc>`). This pairs with Rule 4 (Rule 4 governs *when* to commit, this governs *where*).
+
+30. **Root cause before fix:** No code fix without understanding the root cause. The order is reproduce → analyse → fix, never fix-first. For bugs especially: write the failing test first (it proves the cause is where you think it is), then fix. A fix that makes a symptom disappear without an understood cause is not a fix.
+
+31. **One topic at a time:** When working through a set of findings, decisions, or questions (review findings, `/discuss` gray areas, `/diaboli` attacks): handle them strictly sequentially — present one, resolve it with the user, only then move to the next. Do not batch multiple open items into one message unless the user signals "go through them all". This prevents items being silently skipped.
+
+32. **QA loop-back (tracer bullet):** If a Phase 5 (QA) finding reveals something that belongs upstream — a new pattern, an ADR violation, a cross-cutting concern, an undocumented API change, or real technical debt — STOP and loop back to Phase 1, do not patch it in place. QA is allowed to send work back to the problem space; that is a feature, not a failure.
 
    **Interactive HTMLs — required pattern:**
    - **Annotation fields:** If the agent expects feedback, the HTML for each section MUST provide a `<textarea data-remark="...">`. No read-only presentation when interaction is expected.
