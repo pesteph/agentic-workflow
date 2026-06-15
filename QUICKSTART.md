@@ -12,6 +12,8 @@
 
 ## Setup (3 steps)
 
+The workflow installs **once into your user scope** — then it's available in **every** project. No per-project install.
+
 ### 1. Clone this repo
 
 ```bash
@@ -20,33 +22,34 @@ git clone https://github.com/pesteph/agentic-workflow.git ~/tools/agentic-workfl
 
 You can clone it anywhere — `~/tools/`, `~/src/`, wherever you keep tooling.
 
-### 2. Open this repo in your harness and run `/install-workflow`
+### 2. Open this repo in your harness and run `/downstream`
 
 ```
-/install-workflow /path/to/your/project
+/downstream
 ```
 
-Optional: `--harness=copilot|claude|both` (default `both`).
+Optional: `--harness=claude|copilot|both` (default `both`).
 
-`/install-workflow` installs the methodology in your target project:
-- Workflow rules → `AGENTS.md` at your project root
-- Workflow Skills → `.github/skills/` (Copilot) and/or `.claude/skills/` (Claude)
-- Harness entry points (`copilot-instructions.md` / `CLAUDE.md` / `settings.json`)
+`/downstream` installs the methodology into your user scope:
+- Workflow rules → `~/.claude/CLAUDE.md` (Claude) and/or `~/.copilot/copilot-instructions.md` (Copilot)
+- Workflow Skills → `~/.claude/skills/` (Claude) and/or `~/.copilot/skills/` (Copilot)
 - Skips Skills your harness already provides as built-ins
 
-### 3. Define the universe
+The same command installs and upgrades — re-run it after `git pull` to update every project at once.
 
-Open your target project and run:
+### 3. Open any project and run `/axiom`
+
+Because the Skills live in your user scope, they're available in **every** project. Open any project and run:
 
 ```
 /axiom
 ```
 
-`/axiom` guides you through a Socratic dialogue: stack, architecture, constraints, NFAs, out-of-scope. The result is stored in `docs/` (`project.md`, `architecture.md`, `domain.md`).
+`/axiom` guides you through a Socratic dialogue: stack, architecture, constraints, NFAs, out-of-scope. The result is stored in that project's `docs/` (`project.md`, `architecture.md`, `domain.md`).
 
 ## Your first workflow run
 
-In your target project:
+In any project:
 
 ```
 /analyze "I want to build a CSV import for customer data"
@@ -69,7 +72,7 @@ After each step the agent tells you what comes next. `/next` runs it.
 UNIVERSE:   /axiom  (defined once, read on every run)
 🔴 RED:     /analyze → /discuss → /research
 🔵 BLUE:    /conceptualize
-🟢 GREEN:   /design → /diaboli (optional, challenge + completeness) → /brief → design.md
+🟢 GREEN:   /design → /diaboli (optional, challenge concept) → /verify (completeness gate) → /brief → design.md
 BUILD:      design.md → Sub-Agent (local) or cloud coding agent
 QA:         /qa Fleet (5 review dimensions)
 LEARNING:   /retro → /upstream
@@ -85,10 +88,8 @@ LEARNING:   /retro → /upstream
 
 ## Keeping skills up to date
 
-After your first cycle, from your target project:
-
 ```
-/downstream    # pull latest Skills from agentic-workflow repo
+/downstream    # from a clone of this repo: install + upgrade your user scope (re-run after git pull)
 /upstream      # send your improvements back as a PR
 ```
 

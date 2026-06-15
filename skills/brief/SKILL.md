@@ -19,11 +19,11 @@ You generate `design.md` — the **green figure** — as the only handoff artifa
 
 ## Execution
 
-**Delegate** the preparation to a Sub-Agent. Give it the full Skill instructions and the **design result from `/design`** (including additions from `/diaboli`). Show the user the complete result.
+**Delegate** the preparation to a Sub-Agent. Give it the full Skill instructions and the **design result from `/design`** (including additions from `/diaboli` and `/verify`). Show the user the complete result.
 
 ## Approach
 
-1. **Include the design result** — Use the solution concept and pseudocode from `/design` as the foundation. Apply additions from `/diaboli` (accepted risks, design changes, completeness findings) 1:1.
+1. **Include the design result** — Use the solution concept and pseudocode from `/design` as the foundation. Apply additions from `/diaboli` (accepted risks, design changes) and `/verify` (resolved completeness findings) 1:1.
 2. **Carry over research 1:1** — Technical details from the research report are NOT summarized or abstracted. For each data field: config key, field name, casing (PascalCase/camelCase), format, example value — state them explicitly. Information loss causes semantic bugs.
 3. **Build design.md** — Add all information the implementer needs:
    - Precise problem description
@@ -86,10 +86,11 @@ The implementer receives the **intentional design decisions**:
 - All D-U-XX decisions (user decisions from `/discuss`)
 - All D-ADR-XXX decisions (ADRs from `/design`)
 - Accepted risks from `/diaboli`
+- Resolved completeness findings from `/verify`
 
-### For the cloud path: link Skills with file paths
+### For the cloud path: inline the quality criteria
 
-Every reference to a Skill MUST include the relative file path (e.g. `.github/skills/simplify/SKILL.md`). The Cloud Agent does not know Skills by name.
+The Cloud Agent runs on the repo with **no access to your user-scope Skills** — it cannot resolve a Skill by name or user-scope path. Summarize the QC criteria you want applied directly into `design.md` (the checks in the table above), so the agent has everything it needs in the one artifact.
 
 ### Place the quality chain prominently
 
@@ -127,7 +128,7 @@ QC instructions belong at the BEGINNING of the document — not at the end. Impl
 - [Path and short description]
 
 ## Intentional Design Decisions (DO NOT report as a finding)
-[All D-U-XX, D-ADR-XXX, accepted Diaboli risks]
+[All D-U-XX, D-ADR-XXX, accepted Diaboli risks, resolved /verify findings]
 ```
 
 ```

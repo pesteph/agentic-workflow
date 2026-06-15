@@ -51,21 +51,42 @@ If the framework or language used is unknown:
 
 ## Output format
 
+Each finding is one mechanical line. No prose, no hedging:
+
 ```
-## Simplification suggestions
+L<line(s)>: <tag>: <what>. → <replacement>.
+```
 
-### [File:Line] — [Short description]
-**Current:**
-[Code block]
+The tag is from a **closed vocabulary**; each tag dictates the replacement field:
 
-**Simplified:**
-[Code block]
+- `delete:` — dead / unnecessary code → `remove` (replacement is nothing)
+- `stdlib:` — reinvents a standard-library function → name the exact function
+- `native:` — reinvents a native platform/framework feature → name the feature
+- `yagni:` — abstraction with a single implementation / speculative generality → the concrete inlined form
+- `shrink:` — verbose form with a shorter equivalent → show the shorter form
 
-**Rationale:** [Why is this simpler? What does not change?]
+Highest-impact findings first. End with one forcing metric:
+
+```
+net: -<N> lines possible
+```
+
+If nothing is worth changing, output exactly the following and stop — do **not** manufacture nits:
+
+```
+Lean already. Ship.
+```
+
+### Calibration
+
+❌ `L42: this could maybe be simplified by using a helper, consider refactoring`
+✅ `L42: stdlib: hand-rolled max-of-list loop. → max(scores).`
 
 ## Workflow state (update in plan.md)
+
+```
 - Completed Skill: /simplify
-- Result: [1-2 sentences: number of simplification suggestions, biggest improvement]
+- Result: [1-2 sentences: number of findings, biggest improvement, net lines saved]
 - Next Skill: /test-review
 - Context for next Skill: [PR number or file paths of the simplified files]
 ```

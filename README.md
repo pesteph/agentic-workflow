@@ -2,7 +2,7 @@
 
 **A skills-based workflow template for structured, AI-supported software development.**
 
-> Language-agnostic. Works with GitHub Copilot CLI and Claude Code. Run `/install-workflow <target>` from this repo to deploy.
+> Language-agnostic. Works with GitHub Copilot CLI and Claude Code. Install once into your user scope with `/downstream` — then every project gets the workflow.
 
 ---
 
@@ -24,7 +24,7 @@ This workflow makes defining the universe the first conscious step. Everything e
          ▼ per task:
   🔴 RED  — Problem space     /analyze /discuss /research
   🔵 BLUE — Solution options /conceptualize
-  🟢 GREEN — Solution design   /design /diaboli → /brief → design.md
+  🟢 GREEN — Solution design   /design /diaboli /verify → /brief → design.md
          │
          ▼
       BUILD → QA → LEARNING
@@ -44,7 +44,8 @@ graph TD
     DI["🔴 /discuss (optional)"]
     C["🔵 /conceptualize or /deep-conceptualize"]
     DE["🟢 /design"]
-    DAB["🟢 /diaboli (optional — challenge + completeness)"]
+    DAB["🟢 /diaboli (optional — challenge concept)"]
+    VER["🟢 /verify (completeness gate)"]
     BR["🟢 /brief → design.md"]
     L["🛠️ Local: Sub-Agent"]
     CL["🛠️ Cloud: Coding Agent"]
@@ -57,7 +58,8 @@ graph TD
     R --> C
     C --> DE
     DE --> DAB
-    DAB --> BR
+    DAB --> VER
+    VER --> BR
     BR --> L
     BR --> CL
     L --> QA
@@ -91,7 +93,9 @@ The universe belongs to the project, not the task. `/axiom` writes it, `/retro` 
 
 **`/design`** details the approved options as ADRs + pseudocode. Every decision needs a source. The result is a collaborative artifact — not finished code, but discussion material that is iterated on together.
 
-**`/diaboli`** *(optional)* serves a dual role for high-complexity / high-risk designs: **Devil's Advocate** (creatively attacks the design from 5 angles) AND **completeness check** (verifies the design is ready for implementation against 6 mechanical dimensions). One Skill, two parts.
+**`/diaboli`** *(optional)* is the **Devil's Advocate** — for high-complexity / high-risk designs it creatively attacks the *concept* from 6 angles (scaling, maintenance, integration, opposite, most-expensive-mistake, over-engineering) to surface hidden risks.
+
+**`/verify`** is the **craftsman's check** — the mechanical completeness gate before handoff. It verifies the design is complete and ready to build against 6 pass/fail dimensions (requirement coverage, task completeness, dependency order, key links, no placeholders, decision compliance).
 
 **`/brief`** always generates `design.md` — the green figure, the only handoff artifact to Phase 4. Three paths: local (design.md → Sub-Agent), cloud (design.md → cloud coding agent), existing issue (becomes the green figure).
 
@@ -119,7 +123,7 @@ After every review: discuss findings and fix them. `/qa` itself stays on subscri
 
 **`/upstream`** transfers generic Skill improvements from the retrospective back to this repo as a PR — other projects benefit.
 
-**`/downstream`** pulls the latest version of the Skills from this repo into your project. Local adjustments are diffed against canonical; you decide per Skill.
+**`/downstream`** installs and upgrades the Skills into your **user scope** (`~/.claude`, `~/.copilot`) from a clone of this repo — run it once to install, re-run after `git pull` to upgrade. Locally modified Skills are diffed against canonical; you decide per Skill.
 
 ---
 
@@ -134,7 +138,8 @@ After every review: discuss findings and fix them. `/qa` itself stays on subscri
 | `/conceptualize` | 2 — Blue | Show solution options, checkpoint |
 | `/deep-conceptualize` | 2 — Blue | Multi-Agent concept exploration (alternative) |
 | `/design` | 3 — Green | ADRs + pseudocode as a collaborative artifact |
-| `/diaboli` | 3 — Green | Devil's Advocate + completeness check (optional) |
+| `/diaboli` | 3 — Green | Devil's Advocate — attacks the concept (optional) |
+| `/verify` | 3 — Green | Craftsman's check — completeness gate before `/brief` |
 | `/brief` | 3 → 4 | Generates `design.md` — the green figure |
 | `/simplify` | 5 — QA | Simplify code (Copilot only; Claude uses built-in) |
 | `/test-review` | 5 — QA | Test coverage (mathematical, with matrix) |
@@ -144,15 +149,14 @@ After every review: discuss findings and fix them. `/qa` itself stays on subscri
 | `/qa` | 5 — QA | Meta-Skill: all 5 review dimensions in parallel |
 | `/retro` | 6 — Learning | Improve the workflow |
 | `/upstream` | 6 — Learning | Send improvements back to the Skill repo |
-| `/downstream` | Setup | Pull the latest Skills |
+| `/downstream` | Setup | Install / upgrade the Skills into your user scope (`~/.claude`, `~/.copilot`) |
 | `/next` | Workflow | Read plan.md, start the next Skill |
-| `/install-workflow` | Setup (this repo only) | Install agentic-workflow into a target project |
 
 ---
 
 ## Setup
 
-This repo distributes the methodology — it does not apply itself. To use the workflow in your own project:
+The workflow installs **once into your user scope** — then it's available in **every project** on your machine. No per-project install.
 
 ### 1. Clone this repo locally
 
@@ -160,37 +164,35 @@ This repo distributes the methodology — it does not apply itself. To use the w
 git clone https://github.com/pesteph/agentic-workflow.git ~/tools/agentic-workflow
 ```
 
-### 2. Open this repo in your harness
+### 2. Open this repo in your harness and run `/downstream`
 
-GitHub Copilot CLI or Claude Code — `/install-workflow` is registered for both.
-
-### 3. Run `/install-workflow` against your target project
+GitHub Copilot CLI or Claude Code — `/downstream` is registered for both.
 
 ```
-/install-workflow /path/to/your/project
+/downstream
 ```
 
-Optional: `--harness=copilot|claude|both` (default `both`).
+Optional: `--harness=claude|copilot|both` (default `both`).
 
-`/install-workflow` detects which harness(es) you're using, installs the right files in your target, and handles both:
+`/downstream` detects which harness(es) you're using and installs the Skills into your user scope. The same command **installs and upgrades** — run it once to install, re-run after `git pull` to update. It handles both:
 
-- **First install** — fresh setup, no existing methodology in target
+- **First install** — fresh setup, no existing methodology in your user scope
 - **Upgrade** — existing install gets updated; locally modified Skills get diffed and you decide per Skill
 
-After `/install-workflow`, open your target project and run:
+### 3. Open any project and run `/axiom`
 
 ```
 /axiom
 ```
 
-`/axiom` defines the universe (project, architecture, domain). Then `/analyze` to start your first task.
+Because the Skills live in your user scope, they're available in **every** project. `/axiom` defines that project's universe (project, architecture, domain). Then `/analyze` to start your first task.
 
 ### Harness coverage
 
-- **GitHub Copilot CLI** — installs to `.github/skills/`; uses Copilot's `/research` and `/review` built-ins
-- **Claude Code** — installs to `.claude/skills/`; uses Claude's `/code-review`, `/security-review`, `/simplify` built-ins; ships a custom `/research` Skill (no Claude built-in)
+- **GitHub Copilot CLI** — installs to `~/.copilot/skills/<name>/SKILL.md` + `~/.copilot/copilot-instructions.md`; uses Copilot's `/research` and `/review` built-ins
+- **Claude Code** — installs to `~/.claude/skills/<name>/SKILL.md` + `~/.claude/CLAUDE.md`; uses Claude's `/code-review`, `/security-review`, `/simplify` built-ins; ships a custom `/research` Skill (no Claude built-in)
 
-Skills with harness equivalents are intentionally NOT installed (skip-list in `.github/skills/install-workflow/SKILL.md`).
+Both harnesses use the **same `SKILL.md` format** (Copilot CLI uses *Skills*, not agents) — rendering is a 1:1 copy, no conversion. Skills with a harness built-in equivalent are intentionally NOT rendered (skip-list in [`skills/downstream/adapters.md`](skills/downstream/adapters.md)).
 
 ---
 
@@ -201,58 +203,47 @@ Skills with harness equivalents are intentionally NOT installed (skip-list in `.
 ```
 agentic-workflow/
 ├── AGENTS.md                       # canonical workflow rules
-├── skills/                         # canonical Workflow Skills (18)
+├── skills/                         # canonical Workflow Skills (19)
 │   ├── axiom/SKILL.md
 │   ├── analyze/SKILL.md
 │   ├── … 16 more
-│   └── (no verify — merged into diaboli)
-├── harnesses/                      # per-harness templates that /install-workflow copies
-│   ├── copilot/
-│   │   └── copilot-instructions.md
-│   └── claude/
-│       ├── CLAUDE.md
-│       └── settings.json
+│   └── downstream/
+│       ├── SKILL.md
+│       └── adapters.md             # per-harness paths, skip-list, instruction-file preambles
 ├── .github/                        # this repo's own Copilot setup
-│   ├── copilot-instructions.md     # minimal: "this repo provides /install-workflow"
-│   └── skills/install-workflow/SKILL.md        # /install-workflow exposed for Copilot CLI
+│   ├── copilot-instructions.md     # minimal: "this repo provides /downstream"
+│   └── skills/downstream/SKILL.md  # /downstream exposed for Copilot CLI
 └── .claude/                        # this repo's own Claude setup
-    ├── CLAUDE.md                   # minimal: "this repo provides /install-workflow"
-    └── skills/install-workflow/SKILL.md        # /install-workflow exposed for Claude Code
+    ├── CLAUDE.md                   # minimal: "this repo provides /downstream"
+    └── skills/downstream/SKILL.md  # /downstream exposed for Claude Code
 ```
 
-### Your project (after `/install-workflow`)
+### Your user scope (after `/downstream`)
 
 ```
-your-project/
-├── AGENTS.md                       # workflow rules at root
-├── .github/                        # if Copilot:
-│   ├── copilot-instructions.md
-│   └── skills/<name>/SKILL.md ×17  (research, review skipped — Copilot built-ins)
-├── CLAUDE.md                       # if Claude:
-├── .claude/
-│   ├── settings.json
-│   └── skills/<name>/SKILL.md ×16  (review, security-review, simplify skipped — Claude built-ins)
-├── docs/                           # created by /axiom — project universe
-│   ├── project.md
-│   ├── architecture.md
-│   └── domain.md
-└── plan.md                         # workflow state
+~/.claude/                          # if Claude:
+├── CLAUDE.md                       # workflow rules (applies to all projects)
+└── skills/<name>/SKILL.md ×16      (review, security-review, simplify skipped — Claude built-ins)
+
+~/.copilot/                         # if Copilot:
+├── copilot-instructions.md         # workflow rules (applies to all projects)
+└── skills/<name>/SKILL.md ×17      (research, review skipped — Copilot built-ins)
 ```
+
+Project-specific universe and rules live in the **project's own** `AGENTS.md` / `CLAUDE.md` plus `docs/` (created by `/axiom`: `project.md`, `architecture.md`, `domain.md`) and `plan.md` (workflow state). The user scope holds only what applies to all projects.
 
 ---
 
 ## Keeping Skills Up to Date
 
-From inside your target project:
-
 ```
-/downstream    # pull latest Skills from this repo, with diff review per file
-/upstream      # push your improvements back as a PR
+/downstream    # from a clone of this repo: install + upgrade your user scope, with diff review per Skill
+/upstream      # send your improvements back to this repo as a PR
 ```
 
-These work in the target, not in this distribution repo.
+`/downstream` is the single setup/update path: re-run it after `git pull` in your clone to upgrade every project at once. `/upstream` works from inside a project where you made improvements.
 
-> **Tip:** `/downstream` at the start of a new workflow cycle, `/upstream` after `/retro`.
+> **Tip:** `git pull` + `/downstream` whenever the upstream repo changes, `/upstream` after `/retro`.
 
 ---
 
