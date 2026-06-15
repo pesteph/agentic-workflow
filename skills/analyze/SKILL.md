@@ -9,7 +9,7 @@ You analyze a GitHub issue or a task and open up the problem space.
 
 ## Execution
 
-**Delegate** the analysis to a Sub-Agent. Give it the full Skill instructions and the user context. Show the user the complete result.
+The Main Agent performs `/analyze` **itself** — framing the problem benefits from the full conversation context (Rule 2). It may dispatch read-only Sub-Agents for broad codebase exploration, but the analysis and its synthesis stay with the Main Agent.
 
 ## Approach
 

@@ -75,12 +75,15 @@ After every review Skill, findings are discussed and fixed immediately — just 
 
    **Depth scales with complexity.** `/analyze` recommends how deep to go: a trivial bugfix runs a short chain (analyze → design/brief → qa → retro), a complex feature runs the full chain (incl. discuss, research, conceptualize, diaboli, verify). The *structure* stays the same, the *depth* scales. **The user may skip phases — the model never self-skips them.** Even when the user brings a finished plan or says "just implement this", every phase is at minimum run as a quick check; the model does not silently drop a phase.
 
-2. **Delegate instead of doing it yourself:** Main Agent = manager, not coder. Every task — reading code, searching the codebase, analyzing files, writing tests, changing code — is delegated to a Sub-Agent (whichever sub-agent primitive the harness provides). The Main Agent coordinates, reviews results, and steers the workflow. Fresh context windows in Sub-Agents prevent context rot. The ONLY things the Main Agent does itself:
-   - Read Skill files (to pass instructions to Sub-Agents)
-   - Communicate with the user (present results, ask questions)
-   - Coordinate decisions (merge results, determine the next step)
+2. **Main Agent does the thinking; delegate the building and the independent checks.** The Main Agent holds the full context, so it runs the generative and orchestration work ITSELF — `/axiom`, `/analyze`, `/discuss`, `/conceptualize`, `/design`, `/brief`, `/retro`, `/next`, plus merging results and steering. Delegation to a Sub-Agent is reserved for the cases where a sub-agent is genuinely better than inline work:
+   - **Independence** — work that must NOT be done by whoever produced the artifact under review, because self-review misses blind spots: `/diaboli`, `/verify`, and the reviews (`/simplify`, `/test-review`, `/review`, `/security-review`, `/doc-review`). The reviewer gets a fresh context that did not write the design or code.
+   - **Parallelism** — units that run concurrently for throughput: the `/qa` Fleet, `/deep-conceptualize`.
+   - **Isolation** — bulk read-only gathering (`/research`): a fresh read-only Sub-Agent runs the investigate→synthesize loop and returns only the report, keeping raw sources out of the Main context. A thinking Skill may likewise dispatch read-only Sub-Agents for broad codebase exploration while keeping the synthesis itself.
+   - **Coding** — Phase 4 implementation (local Sub-Agent or cloud coding agent).
 
-   **Trivial-edit exception:** a change affecting ≤2 files AND ≤2 lines (typo, one-line fix, rename) the Main Agent may do itself — dispatching an agent costs more than the edit. Everything larger is delegated.
+   **Why not delegate everything:** with large context windows, context-rot is no longer the dominant concern, and the Main Agent — holding the full conversation — is usually more effective at the thinking work (see Rule 26). Independence, parallelism, isolation, and coding remain the real reasons to delegate.
+
+   **Trivial-edit exception:** the Main Agent may make a code change of ≤2 files AND ≤2 lines (typo, one-line fix, rename) itself rather than dispatching a coding Sub-Agent.
 
 3. **Respect plan mode:**
    - In plan mode, ONLY planning happens. No implementation, no agent starts for code changes, no file changes outside session-state files. “Writing into the plan” means updating plan.md, NOTHING ELSE. No agents, no analysis, no code changes.

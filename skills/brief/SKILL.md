@@ -19,7 +19,7 @@ You generate `design.md` — the **green figure** — as the only handoff artifa
 
 ## Execution
 
-**Delegate** the preparation to a Sub-Agent. Give it the full Skill instructions and the **design result from `/design`** (including additions from `/diaboli` and `/verify`). Show the user the complete result.
+The Main Agent performs `/brief` **itself** — it compiles the existing **design result from `/design`** (including additions from `/diaboli` and `/verify`), the research, and the decisions into `design.md`. This is synthesis of material the Main Agent already holds; delegating would only lose fidelity (Rule 2). Show the user the complete result.
 
 ## Approach
 

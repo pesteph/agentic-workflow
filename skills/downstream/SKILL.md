@@ -9,7 +9,7 @@ You render the canonical workflow into the user's **user scope**, so the Skills 
 
 ## Execution
 
-**Delegate** the file work to a Sub-Agent. Give it the full Skill instructions and the path to the agentic-workflow repo (the canonical source).
+The Main Agent performs `/downstream` **itself** — it reads the canonical sources, shows the plan, asks per user-modified file, and renders into the user scope. Mechanical file work plus interactive decisions; not delegated (Rule 2).
 
 ## Invocation
 

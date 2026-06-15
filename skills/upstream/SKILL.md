@@ -9,7 +9,7 @@ You transfer Skill improvements from the Retro to the original Skill repo.
 
 ## Execution
 
-**Delegate** the implementation to a Sub-Agent. Give it the full Skill instructions, the upstream suggestions from the Retro, and the path/URL of the Skill repo.
+The Main Agent performs `/upstream` **itself** — the diff review and the generic-vs-project-specific judgement are interactive decisions with the user, and creating the PR is mechanical git work the Main Agent does directly (Rule 2).
 
 ## Prerequisites
 

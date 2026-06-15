@@ -28,7 +28,7 @@ Every escalation past rung 1 MUST be justified in an ADR citing why the lower ru
 
 ## Execution
 
-**Delegate** the design work to a Sub-Agent. Give it the full Skill instructions, the approved options from `/conceptualize`, and the research results. Show the user the complete result.
+The Main Agent performs `/design` **itself** — it holds the full context from `/analyze`, `/discuss`, `/conceptualize`, and `/research`, which a fresh Sub-Agent would lack (Rule 2, Rule 26). It may dispatch read-only Sub-Agents to explore the codebase, but the ADRs, pseudocode, and synthesis stay with the Main Agent. The result is developed collaboratively with the user.
 
 ## Approach
 
