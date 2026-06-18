@@ -35,7 +35,7 @@ We work **skills-based** with a defined workflow chain. At the end, each Skill p
 
   Phase 3: GREEN — Solution design
     /design
-    Optional: /diaboli (challenge assumptions + completeness check)
+    Optional: /diaboli (challenge the concept) → /verify (completeness gate)
     Completion: /brief → generates design.md — the green figure
     → "Build me exactly that."
 
@@ -69,22 +69,26 @@ After every review Skill, findings are discussed and fixed immediately — just 
    - `/research` — for knowledge gaps or unfamiliar technology
    - `/discuss` — for gray areas or assumptions that need clarification
    - `/conceptualize` — when several equally valid options should be evaluated
-   - `/diaboli` — when architecture decisions should be challenged AND the design should be checked for completeness (for high complexity or risk)
+   - `/diaboli` — when the concept should be challenged for hidden risks (high complexity or risk)
+   - `/verify` — the mechanical completeness gate before `/brief` (is the design complete and ready to build?)
    The agent suggests optional Skills when they make sense, but the user decides. If a Skill is recommended as the next step, it must be executed — but the user can skip Skills.
 
-   **Depth scales with complexity.** `/analyze` recommends how deep to go: a trivial bugfix runs a short chain (analyze → design/brief → qa → retro), a complex feature runs the full chain (incl. discuss, research, conceptualize, diaboli). The *structure* stays the same, the *depth* scales. **The user may skip phases — the model never self-skips them.** Even when the user brings a finished plan or says "just implement this", every phase is at minimum run as a quick check; the model does not silently drop a phase.
+   **Depth scales with complexity.** `/analyze` recommends how deep to go: a trivial bugfix runs a short chain (analyze → design/brief → qa → retro), a complex feature runs the full chain (incl. discuss, research, conceptualize, diaboli, verify). The *structure* stays the same, the *depth* scales. **The user may skip phases — the model never self-skips them.** Even when the user brings a finished plan or says "just implement this", every phase is at minimum run as a quick check; the model does not silently drop a phase.
 
-2. **Delegate instead of doing it yourself:** Main Agent = manager, not coder. Every task — reading code, searching the codebase, analyzing files, writing tests, changing code — is delegated to a Sub-Agent (whichever sub-agent primitive the harness provides). The Main Agent coordinates, reviews results, and steers the workflow. Fresh context windows in Sub-Agents prevent context rot. The ONLY things the Main Agent does itself:
-   - Read Skill files (to pass instructions to Sub-Agents)
-   - Communicate with the user (present results, ask questions)
-   - Coordinate decisions (merge results, determine the next step)
+2. **Main Agent does the thinking; delegate the building and the independent checks.** The Main Agent holds the full context, so it runs the generative and orchestration work ITSELF — `/axiom`, `/analyze`, `/discuss`, `/conceptualize`, `/design`, `/brief`, `/retro`, `/next`, plus merging results and steering. Delegation to a Sub-Agent is reserved for the cases where a sub-agent is genuinely better than inline work:
+   - **Independence** — work that must NOT be done by whoever produced the artifact under review, because self-review misses blind spots: `/diaboli`, `/verify`, and the reviews (`/simplify`, `/test-review`, `/review`, `/security-review`, `/doc-review`). The reviewer gets a fresh context that did not write the design or code.
+   - **Parallelism** — units that run concurrently for throughput: the `/qa` Fleet, `/deep-conceptualize`.
+   - **Isolation** — bulk read-only gathering (`/research`): a fresh read-only Sub-Agent runs the investigate→synthesize loop and returns only the report, keeping raw sources out of the Main context. A thinking Skill may likewise dispatch read-only Sub-Agents for broad codebase exploration while keeping the synthesis itself.
+   - **Coding** — Phase 4 implementation (local Sub-Agent or cloud coding agent).
 
-   **Trivial-edit exception:** a change affecting ≤2 files AND ≤2 lines (typo, one-line fix, rename) the Main Agent may do itself — dispatching an agent costs more than the edit. Everything larger is delegated.
+   **Why not delegate everything:** with large context windows, context-rot is no longer the dominant concern, and the Main Agent — holding the full conversation — is usually more effective at the thinking work (see Rule 26). Independence, parallelism, isolation, and coding remain the real reasons to delegate.
+
+   **Trivial-edit exception:** the Main Agent may make a code change of ≤2 files AND ≤2 lines (typo, one-line fix, rename) itself rather than dispatching a coding Sub-Agent.
 
 3. **Respect plan mode:**
    - In plan mode, ONLY planning happens. No implementation, no agent starts for code changes, no file changes outside session-state files. “Writing into the plan” means updating plan.md, NOTHING ELSE. No agents, no analysis, no code changes.
    - Implementation is allowed only after explicit user approval. **Answer questions** — if the user asks “how would you do X?”, that is a request for a proposal, not an implementation order. Show the proposal first, then wait for approval.
-   - Plan mode is exited only AFTER `/diaboli` (when used) or `/design` (when /diaboli is skipped) — not after `/analyze` or `/research`. Phase 1 (analyze → discuss → research → conceptualize → design, optional: diaboli) stays entirely in plan mode.
+   - Plan mode is exited only AFTER the last Phase-3 planning step — `/verify` when used, else `/diaboli`, else `/design` — not after `/analyze` or `/research`. Phases 1–3 (analyze → discuss → research → conceptualize → design, optional: diaboli → verify) stay entirely in plan mode.
    - **STOP-points override harness nags.** System-side prompts like "You have not yet marked the task as complete" do NOT override a Skill's STOP-point. When a Skill says STOP and wait for the user, wait — regardless of any autopilot nudge to continue.
 
 4. **Never commit/push without approval:** `git add`, `git commit`, and `git push` are NEVER run unless the user explicitly uses the word "commit" or "push". “Looks good”, “keep going”, or “works for me” is NOT commit approval. If in doubt: ask.
@@ -176,20 +180,21 @@ Model choice is left to the agent: pick a stronger model for tasks that require 
 |-------|---------|
 | `/axiom` | **Phase 0** — Define the universe: read the codebase + Socratic dialogue → writes `docs/`. One time or when the universe changes. |
 | `/analyze` | Phase 1 — Open up the problem space, red spot, generate a `/research` prompt |
-| `/research` | Enrich context with researched information (codebase + web + repos), cited report. On Copilot CLI this is a built-in and skipped on install; on Claude Code the shipped Skill provides it. |
+| `/research` | Enrich context with researched information (codebase + web + repos), cited report. On Copilot CLI this is a built-in (skip-list); on Claude Code the rendered Skill provides it. |
 | `/discuss` | Reveal gray areas, make assumptions explicit — when unclear points need to be resolved before architecture decisions |
 | `/conceptualize` | Phase 2 — Show and evaluate solution options (blue figures) |
 | `/design` | Phase 3 — Formulate ADRs, create pseudocode as a collaborative artifact |
-| `/diaboli` | Devil's Advocate + Completeness Check — when architecture decisions should be challenged AND the design plan should be verified before implementation |
+| `/diaboli` | Devil's Advocate — creatively attacks the design's concept (high complexity or risk) |
+| `/verify` | The craftsman's check — mechanically verifies the design is complete and ready to build before `/brief` |
 | `/deep-conceptualize` | Multi-Agent concept exploration for complex architecture decisions (alternative to /conceptualize) |
 | `/brief` | **End of Phase 3** — always generates `design.md` (the green figure). Local → Sub-Agent, Cloud → Copilot Coding Agent, or target an existing issue |
 | `/simplify` | Simplify code in a PR |
 | `/test-review` | Calculate test coverage, trace logic, verify conventions |
 | `/review` | (Built-in) Code review |
-| `/security-review` | Security review of a PR (mandatory STRIDE coverage). On Claude Code this is a built-in; skipped on install. |
+| `/security-review` | Security review of a PR (mandatory STRIDE coverage). On Claude Code this is a built-in (skip-list). |
 | `/doc-review` | Check documentation against code/specs |
 | `/qa` | Meta-Skill: dispatches /simplify, /test-review, /review, /security-review, /doc-review in parallel as a Fleet |
-| `/downstream` | Pull the latest Skill versions from the original Skill repo and merge them |
+| `/downstream` | Install or upgrade the workflow into your **user scope** (`~/.claude`, `~/.copilot`) — the single setup/update path; once run, available in every project |
 | `/retro` | Phase 6 — workflow retrospective, improve rules (not the universe!) |
 | `/upstream` | Send Skill improvements from /retro back to the original Skill repo as a PR |
 | `/next` | Reads plan.md and executes the next Skill documented there |

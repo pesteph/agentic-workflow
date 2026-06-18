@@ -15,9 +15,20 @@ You perform the detailed analysis of the options approved by the user, formulate
 
 **Pseudocode is verifiable, prose is not.** Every method with logic (loops, branching, error handling) gets pseudocode — not an abstract description like "iterates over files". `/diaboli` can find bugs in pseudocode; it cannot find bugs in prose.
 
+**Smallest solution that works.** Shape the solution with this ladder, stopping at the first rung that solves the problem:
+
+1. **Necessity** — does this component/abstraction need to exist at all? (YAGNI)
+2. Standard library / language built-in before custom code
+3. Native platform/framework feature before a new dependency
+4. An already-present dependency before adding one
+5. Can it be one line / one function instead of a class/layer?
+6. Only then: a minimal custom implementation
+
+Every escalation past rung 1 MUST be justified in an ADR citing why the lower rung doesn't work. Guardrail: "smallest" never strips quality — never minimize away input validation, error handling that prevents data loss, security measures, accessibility, or explicitly requested features.
+
 ## Execution
 
-**Delegate** the design work to a Sub-Agent. Give it the full Skill instructions, the approved options from `/conceptualize`, and the research results. Show the user the complete result.
+The Main Agent performs `/design` **itself** — it holds the full context from `/analyze`, `/discuss`, `/conceptualize`, and `/research`, which a fresh Sub-Agent would lack (Rule 2, Rule 26). It may dispatch read-only Sub-Agents to explore the codebase, but the ADRs, pseudocode, and synthesis stay with the Main Agent. The result is developed collaboratively with the user.
 
 ## Approach
 
@@ -36,7 +47,7 @@ You perform the detailed analysis of the options approved by the user, formulate
 3. **Formulate ADRs** — Every architecture decision is documented as an ADR.
 4. **Check open questions** — Are there ADRs that cannot be supported by research/sources?
 5. **Create pseudocode** — Create pseudocode/skeleton code for core classes (interfaces, signatures, core logic). Pseudocode is **collaborative discussion material**: the agent creates a draft → the user discusses, changes, extends → iterate together → finalize. Fully compilable code is the job of the implementation agent in Phase 2. For `/brief`, the pseudocode must be concrete enough for the Cloud Agent to implement it — but it does not need to compile. An abstract “implementation plan” (step 1, step 2, ...) is still NOT sufficient.
-6. **Store the design output** — Save the design result as `files/design-output.md` in the session. The design document is the central reference artifact for `/diaboli` and implementation. **plan.md remains the source of truth for workflow state** — session files are read-only reference artifacts.
+6. **Store the design output** — Save the design result as `files/design-output.md` in the session. The design document is the central reference artifact for `/diaboli`, `/verify`, and implementation. **plan.md remains the source of truth for workflow state** — session files are read-only reference artifacts.
 
 ## ADR Requirement
 
@@ -104,7 +115,7 @@ If open **technical** questions remain after proposing the solution:
 ## Workflow State (update in plan.md)
 - Completed Skill: /design
 - Result: [1-2 sentences: chosen solution + number of ADRs]
-- Next Skill: [/research (if there are open questions) | /diaboli (optional — challenges design + verifies completeness) | /brief]
+- Next Skill: [/research (if there are open questions) | /diaboli (optional — challenges the concept) | /verify (completeness gate) | /brief]
 - Context for next Skill: [Research prompt OR reference implementation OR brief foundation]
 ```
 
@@ -112,4 +123,4 @@ If open **technical** questions remain after proposing the solution:
 
 ---
 
-**Next step:** If there are open questions → `/research`. Otherwise: optionally `/diaboli` for creative attacks on design decisions + completeness check before implementation. Alternatively, go directly to `/brief` for cloud implementation.
+**Next step:** If there are open questions → `/research`. Otherwise: optionally `/diaboli` to challenge the concept, then `/verify` as the mechanical completeness gate before implementation. Alternatively, go directly to `/brief` for cloud implementation.

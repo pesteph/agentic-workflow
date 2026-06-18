@@ -9,7 +9,7 @@ You transfer Skill improvements from the Retro to the original Skill repo.
 
 ## Execution
 
-**Delegate** the implementation to a Sub-Agent. Give it the full Skill instructions, the upstream suggestions from the Retro, and the path/URL of the Skill repo.
+The Main Agent performs `/upstream` **itself** — the diff review and the generic-vs-project-specific judgement are interactive decisions with the user, and creating the PR is mechanical git work the Main Agent does directly (Rule 2).
 
 ## Prerequisites
 
@@ -21,10 +21,14 @@ If the user does not specify a path, ask for it.
 
 ## Approach
 
-### 1. Gather upstream suggestions
+### 1. Gather upstream candidates
 
-- Read the upstream suggestions from plan.md (section "Upstream Suggestions") or from the chat context
-- Check whether the suggestions are generic enough for all consumers (filter out project-specific adaptations)
+The staging buffer now lives in **project files and the user scope**, not in per-project Skill copies — so scan THREE sources:
+- **Retro suggestions** — from plan.md (section "Upstream Suggestions") or the chat context
+- **User-scope Skills vs. canonical** — Skills the user hand-edited in their user scope (`~/.claude/skills/`, `~/.copilot/skills/`) that differ from the repo's `skills/<name>/SKILL.md`
+- **Project `AGENTS.md`/`CLAUDE.md`** — project-specific rules that are generic enough to promote into the canonical `AGENTS.md` or a Skill
+
+The filter is always: *is this generic enough to help all consumers, or is it project-specific?* Project-specific adaptations can still have general value — decide together, do not auto-filter.
 
 ### 2. Prepare the Skill repo
 
@@ -36,8 +40,9 @@ If the user does not specify a path, ask for it.
 
 Before discussing diffs in detail — first provide an overall overview:
 
-- Compare ALL Skill files between the consumer repo (local: `.github/skills/<name>/SKILL.md` or `.claude/skills/<name>/SKILL.md`) and the Skill repo (canonical: `skills/<name>/SKILL.md`)
-- For dual-harness consumers, the two local copies should be identical — flag any divergence as a separate finding before upstreaming
+- Compare the user-scope Skills (`~/.claude/skills/<name>/SKILL.md` and/or `~/.copilot/skills/<name>/SKILL.md`, per `skills/downstream/adapters.md`) with the canonical `skills/<name>/SKILL.md` in the Skill repo
+- Both harness copies derive from the same canonical — if they diverge from each other, flag it as a separate finding before upstreaming
+- Also surface the project-`AGENTS.md`/`CLAUDE.md` rules flagged in step 1 as upstream candidates
 - Show in a table: which Skills are identical, which are changed, which exist only locally/only in the repo
 - For each changed file: one-sentence summary of what changed
 - **Assessment per change:** Is the change suitable for upstream? Does it add value for all consumers?
@@ -70,7 +75,7 @@ For each Skill file confirmed as suitable for upstream:
 
 - Check whether the Skill repo has a README, docs, or a Skill overview (typically `README.md`, `AGENTS.md`, `QUICKSTART.md`)
 - Update these files to match the changed Skills (e.g. new steps, changed descriptions, new Skills)
-- If a new Skill should be skipped on a particular harness (because of a built-in equivalent), update the skip-list table in the Skill repo's `/install-workflow` Skill
+- If a new Skill should be skipped on a particular harness (because of a built-in equivalent), update the skip-list table in `skills/downstream/adapters.md`
 - Goal: Skill repo docs and Skill files must not drift apart
 
 ### 7. Create a PR

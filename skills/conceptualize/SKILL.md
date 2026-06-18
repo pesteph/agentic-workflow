@@ -9,7 +9,7 @@ You show options for action and let the user decide which ones to pursue.
 
 ## Execution
 
-**Delegate** the concept work to a Sub-Agent. Give it the full Skill instructions, the problem analysis from `/analyze`, and the research results. Show the user the complete result.
+The Main Agent performs `/conceptualize` **itself** — generating and weighing options is core thinking work that benefits from the full context (Rule 2). The user decides which options to pursue.
 
 ## Approach
 

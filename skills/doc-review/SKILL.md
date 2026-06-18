@@ -32,18 +32,23 @@ You check whether the documentation is consistent with the code and the specific
 - **ADR traceability:** Are the ADRs from `/design` reflected in the project documentation?
 - **Changelog:** Is the change documented in the changelog (if present)?
 
-### 3. Dual-purpose review
+### 3. Dual-Purpose Assessment (mechanical)
 
-The docs must serve two audiences:
-- **Humans:** Are the docs compact and understandable enough to read?
-- **Agents:** Do the docs contain enough context for an agent to understand the code and work with it?
+The verdict is **derived** from these checks, not asserted. Answer each yes/no and attach the evidence that proves it (grep/path). The verdict is `Pass` only if all are yes; otherwise `Fail` and each `no` becomes a finding (see grammar below).
 
-### 4. Completeness
+- [ ] Every public API/flow named in the code is documented somewhere — evidence: grep the symbol/route name in docs.
+- [ ] No doc names a symbol/file/path that no longer exists — evidence: grep each referenced name in the code.
+- [ ] Examples reference real, current paths and signatures — evidence: the cited path/signature resolves.
+- [ ] A doc reader could act (build/run/call) without reading the code — evidence: the entry-point doc states the command/signature, not just prose.
 
-- README is up to date
-- Architecture decisions are documented
-- Configuration options are described
-- Examples are runnable and current
+### 4. Findings grammar (closed tags, grep-verified)
+
+Every finding uses one of these tags. Format: `<file>:<loc>: <tag>: <what>. evidence: <grep/path>.`
+
+- `stale:` doc describes something the code no longer does → cite doc location + the contradicting code path.
+- `missing:` code behavior/flow/API with no doc → cite the code location.
+- `drift:` doc and code disagree on a detail (name/format/value) → cite both.
+- `unrunnable:` example/command that would fail as written → cite why.
 
 ### 5. Promote session artifacts to repo knowledge (optional but recommended)
 
@@ -68,15 +73,18 @@ Present the promotion proposals to the user and let them decide what gets carrie
 |----------|---------------|---------|--------|
 | [What]    | Yes/No       | Yes/No | ✅/❌  |
 
-### Missing Documentation
-- [What is missing and where it should go]
+### Findings (closed tags, each grep-verified)
+- path/to/file:loc: stale: [what]. evidence: [grep/path].
+- path/to/file:loc: missing: [what]. evidence: [grep/path].
+- path/to/file:loc: drift: [what]. evidence: [grep/path].
+- path/to/file:loc: unrunnable: [what]. evidence: [grep/path].
 
-### Outdated Documentation
-- [What is no longer correct]
-
-### Dual-Purpose Assessment
-- Human readability: [Good/Needs improvement]
-- Agent context: [Sufficient/Insufficient]
+### Dual-Purpose Assessment (derived)
+- Every public API/flow documented: Yes/No — [evidence]
+- No doc references a dead symbol/file/path: Yes/No — [evidence]
+- Examples reference real, current paths/signatures: Yes/No — [evidence]
+- Reader can act without reading the code: Yes/No — [evidence]
+- **Verdict: Pass/Fail** (Pass only if all four are Yes)
 
 ## Workflow State (update in plan.md)
 - Completed Skill: /doc-review

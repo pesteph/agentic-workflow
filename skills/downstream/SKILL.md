@@ -1,118 +1,106 @@
 ---
 name: downstream
-description: Pulls the latest version of the Skills from the original Skill repo and merges changes into the project. Use this Skill to bring Skills up to date.
+description: Install or upgrade the agentic-workflow methodology into your USER SCOPE (~/.claude, ~/.copilot) so every project gets it. The single setup/update path — run it from a clone of the agentic-workflow repo. Detects existing installs and asks per user-modified Skill.
 ---
 
 # Downstream
 
-You pull the latest version of the Skills from the original Skill repo and merge changes into the project.
+You render the canonical workflow into the user's **user scope**, so the Skills and rules are available in **every** project on the machine. This is the single install **and** upgrade path — the first run installs, later runs upgrade. There is no per-project install.
 
 ## Execution
 
-**Delegate** the implementation to a Sub-Agent. Give it the full Skill instructions and the path to the Skill repo.
+The Main Agent performs `/downstream` **itself** — it reads the canonical sources, shows the plan, asks per user-modified file, and renders into the user scope. Mechanical file work plus interactive decisions; not delegated (Rule 2).
+
+## Invocation
+
+```
+/downstream [--harness=claude|copilot|both]
+```
+
+- `--harness` — default: detect the harness you're in; `both` renders for both. Restrict with `claude` or `copilot`.
 
 ## Prerequisites
 
-The user must provide:
-1. **Skill repo path** — local path or GitHub URL of the original Skill repo
+1. **Canonical source** — the agentic-workflow repo. Normally you run `/downstream` from a clone of it. If run elsewhere, ask the user for the repo path (or to `git clone` it), then `git pull` for the latest.
+2. Confirm it is the real repo: it must contain `skills/`, `AGENTS.md`, and `skills/downstream/adapters.md` at its root. If not, stop and report.
 
-If the user does not provide a path, ask for it.
+## Source-of-truth (read from the repo)
 
-## Approach
+| Source | Used as |
+|---|---|
+| `skills/<name>/SKILL.md` | canonical Skill bodies — 1:1 copy (both harnesses use the same format) |
+| `AGENTS.md` | the workflow rules (appended to the rendered instruction file) |
+| `skills/downstream/adapters.md` | target paths, skip-list, instruction-file preamble — **the single authority; do not hard-code these here** |
 
-### 1. Update the Skill repo
+## Detection — classify the current user scope
 
-- Navigate to the Skill repo (local or clone it)
-- Run `git pull` to fetch the latest version
-- Identify all Skill files in the repo
+Read `adapters.md` for the target paths, then scan the user scope and classify every relevant path:
 
-### 2. Create a diff
+1. **Each Skill** (at the harness's `skills/` path from `adapters.md`, honoring the skip-list):
+   - **NEW** — not present yet · **identical** — matches canonical · **outdated** — differs, canonical newer · **user-modified** — differs and looks hand-edited · **orphan** — present in user scope but not in canonical sources.
+2. **Instruction file** (`~/.claude/CLAUDE.md` / `~/.copilot/copilot-instructions.md`): NEW / matches the rendered output / differs.
 
-#### a) Skill files
+When unsure between outdated and user-modified, classify as **user-modified** — the user decides.
 
-The Skill repo's canonical source for every workflow Skill is at `skills/<name>/SKILL.md` (in the Skill repo). Locally, in this consumer project, Skills live at:
-- `.github/skills/<name>/SKILL.md` for Copilot
-- `.claude/skills/<name>/SKILL.md` for Claude
+## Plan output (BEFORE any changes)
 
-Detect which of these directories exist locally — diff against whichever is present. For dual-harness targets, both should be identical; if not, treat the mismatch as a separate finding.
+Show ONE consolidated plan and ask for explicit confirmation:
 
-For each canonical Skill file in the Skill repo:
+```
+/downstream plan — user scope
+Harness: both | claude | copilot
 
-- Compare with the matching local copy (Copilot path and/or Claude path)
-- Create a clear diff per file
-- Categorize changes:
-  - **New in the Skill repo** — changes that do not yet exist locally
-  - **Locally adapted** — places changed locally for project-specific reasons
-  - **Conflicts** — places changed both locally and upstream
+NEW (created):     ~/.claude/skills/ (N) · ~/.claude/CLAUDE.md
+                   ~/.copilot/skills/ (N) · ~/.copilot/copilot-instructions.md
+UPDATE (canonical newer):  ~/.claude/skills/axiom/SKILL.md · ...
+REQUIRES DECISION (user-modified):  <file> → diff, then keep yours / canonical / skip
+SKIPPED (harness built-in):  Claude: review, security-review, simplify · Copilot: research, review
+ORPHANS (kept, listed only):  ...
+WILL NOT TOUCH:  settings.json / permissions · any project files
 
-Skip rules: some Skills are intentionally not installed for a given harness (because the harness provides a built-in equivalent). The skip-list is documented in the Skill repo's `/install-workflow` Skill. Do not "pull" a skipped Skill into a path where it is not supposed to live.
+Proceed? [y/N]
+```
 
-#### b) Workflow rules (`AGENTS.md`)
+If the user says no — stop, no changes.
 
-- Compare the canonical `AGENTS.md` in the Skill repo with the local `AGENTS.md` (at the consumer project's root)
-- Check for **new rules** added upstream
-- Check for **changed rules** (same number, different content)
-- Check the workflow chain, model selection table, and Skill overview for differences
-- New general rules MUST be presented to the user — they affect all Skills
+## Execution order
 
-### 3. Diff review with the user
+After confirmation:
 
-For each Skill file with differences:
+1. **NEW + UPDATE Skills** — copy `skills/<name>/SKILL.md` 1:1 to the harness target path (honor the skip-list). Create missing directories first.
+2. **Instruction file** — render = harness preamble (from `adapters.md`) + the full `AGENTS.md` rules → write to the harness instruction path.
+3. **REQUIRES-DECISION (user-modified)** — per file: show the diff, ask `[k]eep yours / [c]anonical / [s]kip`, apply.
+4. **Orphans** — never auto-delete; list in the summary, the user decides.
 
-- Show the diff clearly
-- Mark what comes **new from the Skill repo** and what is a **local adaptation**
-- Discuss with the user: what should be adopted?
-- Local adaptations can intentionally be project-specific — do not overwrite automatically
-- Skill repo changes can also flow into local adaptations (smart merge)
+## What `/downstream` does NOT do
 
-### 4. Apply changes
-
-- Apply only the jointly agreed changes to the local Skill files
-- Preserve project-specific adaptations that should remain
-- In case of conflicts: show both versions and let the user decide
-
-### 5. Detect new Skills
-
-- Check whether the Skill repo contains new Skills that do not yet exist locally
-- Offer to adopt new Skills
-- Check whether new Skills need to be added in `copilot-instructions.md` (Skill overview)
-
-### 6. Update local docs
-
-- Check whether harness entry files need to be updated (`AGENTS.md` at root, `.github/copilot-instructions.md`, `CLAUDE.md`)
-- Update Skill descriptions if steps or behavior changed due to the merge
-- Goal: local docs and Skill files must not drift apart
+- Does NOT touch any **project** files — the user scope is global; project-specifics belong in the project's own `AGENTS.md`/`CLAUDE.md`.
+- Does NOT write the user's `settings.json` / permissions (lists needed permissions as a suggestion only).
+- Does NOT commit. The user reviews and commits if they track their dotfiles.
+- Does NOT auto-run other workflow Skills.
 
 ## Output Format
 
 ```
-## Downstream
+## /downstream Result — user scope
+Harness: <claude|copilot|both>
 
-### Diff Overview
-| File | Skill Repo Version | Local Version | Difference | Status |
-|-------|-------------------|---------------|-------------|--------|
-| [Path] | [Commit/date] | [Commit/date] | New/Changed/Conflict | ⬇️/⚠️/✅ |
+### Installed / Updated (N)
+- ~/.claude/skills/ (X) · ~/.claude/CLAUDE.md
+- ~/.copilot/skills/ (Y) · ~/.copilot/copilot-instructions.md
 
-### Diff Review
-#### [Skill Name]
-[Diff with markers: NEW / LOCAL / CONFLICT]
+### Your decisions (user-modified)
+| File | Decision |
 
-### Decisions
-| File | Change | Decision |
-|-------|----------|--------------|
-| [Path] | [What] | adopt/keep/merge |
-
-### New Skills
-| Skill | Description | Adopted |
-|-------|-------------|------------|
-| [Name] | [Purpose] | Yes/No |
+### Skipped (built-ins) / Orphans (kept)
+- ...
 
 ## Workflow State (update in plan.md)
 - Completed Skill: /downstream
-- Result: [1-2 sentences: number of updated Skills, new Skills]
-- Next Skill: [context-dependent]
+- Result: [N skills installed/updated, harness]
+- Next Skill: /axiom (in your target project)
 ```
 
 ---
 
-**Next step:** Check whether the updated Skills are consistent with the project. Update the harness entry files (`AGENTS.md`, `.github/copilot-instructions.md`, `CLAUDE.md`) if needed.
+**Next step:** Open any project and run `/axiom` — the workflow is now available everywhere. Re-run `/downstream` after a `git pull` to upgrade.

@@ -47,13 +47,13 @@ Formulate concrete, actionable suggestions:
 - Changes to Skill definitions
 - New Skills that are missing
 - Changes to the workflow order
-- Improvements to `copilot-instructions.md`
+- Improvements to the user-scope instruction file (`~/.claude/CLAUDE.md` / `~/.copilot/copilot-instructions.md`)
 
 ### 4b. Instructions/Skills best-practice audit (every retro — no exception)
 
 The retro improves not only the workflow's *behavior* but also the *structure* of the Skill and instruction files themselves:
 
-1. **Structure scan** — for every `AGENTS.md`, `skills/*/SKILL.md`, and project instruction file: line count, number of distinct topics per file.
+1. **Structure scan** — for every workflow file in scope: the user-scope Skills (`~/.claude/skills/*/SKILL.md`, `~/.copilot/skills/*/SKILL.md`), the user-scope instruction files (`~/.claude/CLAUDE.md`, `~/.copilot/copilot-instructions.md`), and the project instruction files (`AGENTS.md`/`CLAUDE.md`): line count, number of distinct topics per file.
 2. **Length check** — for a *focused single-topic file* (one skill, one instruction file) over 80 lines is a warning, over 120 a problem: rules drown in the mass. **Exception:** a central numbered rules reference or index (e.g. `AGENTS.md`) is naturally longer because it aggregates many atomic rules — judge it not by line count but by whether each entry stays atomic and there are no duplicates or contradictions. The real smell is a *single* rule growing long, or a topic file mixing concerns — not the aggregate length of a deliberate rules list.
 3. **Focus check** — does each file have ONE clear topic, or is it a grab-bag?
 4. **Duplicate rules** — same rule stated in multiple files → consolidate.
@@ -82,10 +82,11 @@ The user can then call `/upstream` to send these proposals back to the original 
 Retro is only “done” once proposals are implemented. Flow:
 
 1. Discuss each proposal with the user (implement / park / adjust)
-2. Implement approved proposals IMMEDIATELY:
-   - Adjust `copilot-instructions.md` (add/change rules)
-   - Adjust Skill files or create new Skills
+2. Implement approved proposals IMMEDIATELY (in the **user scope** — changes are global at once):
+   - Adjust the user-scope instruction file (`~/.claude/CLAUDE.md` / `~/.copilot/copilot-instructions.md`)
+   - Adjust user-scope Skill files or create new Skills
    - Update workflow diagrams and tables
+   - Generic improvements that help all consumers go back to the repo via `/upstream`
 3. Verify the implementation (check files, consistent?)
 4. Only AFTER THAT is the retro complete
 
@@ -119,7 +120,7 @@ Retro is only “done” once proposals are implemented. Flow:
 - Completed Skill: /retro
 - Result: [1-2 sentences: overall rating, most important improvement proposal]
 - Next Skill: /analyze (next workflow run)
-- Context for next Skill: [Improvements that were incorporated into copilot-instructions.md]
+- Context for next Skill: [Improvements incorporated into the user-scope instruction file]
 ```
 
 💡 Context maintenance: Consider context compaction for long output. Update plan.md first.
