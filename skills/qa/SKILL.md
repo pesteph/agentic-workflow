@@ -95,6 +95,11 @@ Start **all 5 reviews in parallel and immediately** as `general-purpose` agents 
 - Explicit requirement for a mathematical code-path ↔ test matrix (Rule 23)
 - All source AND test files in scope
 
+**Additional instructions for the security-review agent (HARD-GATE — dependency scan is mandatory):**
+- Where `/security-review` resolves to a harness built-in, that built-in reviews the code diff and does NOT audit dependencies on its own; the workflow's `security-review` SKILL.md is not copied into user scope, so its dependency-analysis section never reaches the agent. Therefore `/qa` MUST inject the dependency scan here.
+- Run a vulnerability scan over **all dependencies, direct AND transitive** — not only those touched by the diff. Detect the package ecosystem from the manifest files and run the matching audit (see the *Dependency analysis* section of `security-review`'s SKILL.md for the per-ecosystem commands; use the project's package manager's native `audit`/`--vulnerable` tooling, with a `/research`-based check against public advisory databases as fallback when no CLI is available).
+- Every reported advisory is a security finding regardless of severity — report the advisory id (CVE/GHSA/…), the affected version range, and the first fixed version. A clean code diff does NOT exempt this scan; dependency vulnerabilities are independent of what changed in the PR.
+
 ### 4. Consolidate results
 
 When all agents are done:

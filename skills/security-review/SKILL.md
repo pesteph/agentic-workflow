@@ -39,9 +39,9 @@ Check systematically for (with CWE reference):
 
 Reference framework: **OWASP Top 10 (2021)**
 
-### 2a. Dependency analysis
+### 2a. Dependency analysis (HARD-GATE — mandatory, never skipped)
 
-Dedicated review of package dependencies for known vulnerabilities (CWE-1395) and supply-chain risks (CWE-1357).
+Dedicated review of package dependencies for known vulnerabilities (CWE-1395) and supply-chain risks (CWE-1357). This scan is **mandatory on every security review** and covers **all dependencies, direct AND transitive** — not only those touched by the diff. A clean code diff does NOT exempt it: dependency vulnerabilities are independent of what changed in the PR, and transitive packages are the most common blind spot. Run the scan, then report every advisory found regardless of severity.
 
 #### Package manager detection
 
